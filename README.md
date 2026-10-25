@@ -2,6 +2,14 @@
 
 一款本地优先的 macOS 桌面便签应用，使用 SwiftUI、AppKit 和 Core Data 开发。支持独立便签窗口、文字与待办、搜索、纸色、钉住、折叠及回收站。无需账号，不提供云同步。
 
+## 开发与资料入口
+
+- [项目 AI 开发入口](AGENTS.md)：按任务路由到工程规则与业务/数据/接口 Wiki；不把历史授权当本轮授权。
+- [需求与历史资料索引](docs/requirements/README.md)：沿用原 0001…0007 目录，保留旧失败、报告与本机证据引用。
+- [原生开发与命令说明](app/README.md)、[验证选择与证据边界](docs/harness/rules/测试规范.md)。
+
+当前源码已包含 0007：设置页全局打开/展开高度（新库或缺字段默认 190pt，175…1000pt）、按张浮顶/沉底、短窗固定添加待办及新行定位；当前打开窗不因保存高度跳动。0007 仍为 verifying，真人 IME、跨应用、滚轮/Tab、真实设置保存/重试点按等缺口见[执行记录](docs/requirements/0007-note-layer-height/progress.md)；历史候选的程序结果不代表当前 HEAD 已全验通过。本次 Harness 整理未启动/安装应用或重跑业务测试。
+
 ## 从源码构建
 
 当前构建目标为 macOS 26；已使用的开发环境为 Apple Silicon、macOS 26.5.1、Swift 6.3.3 / Command Line Tools。其他环境未验证。不依赖第三方包，无需安装项目依赖。
@@ -12,7 +20,7 @@ cd PaperDock
 bash app/build.sh
 ```
 
-构建产物为 `app/build/PaperDock.app`，脚本不会自动启动应用。双击应用后，默认使用当前用户的 Application Support/PaperDock 保存数据；开发时的隔离运行和测试方式见 [app/README.md](app/README.md)。当前仍为试用阶段，最新折叠与间距功能尚未完成完整功能验收，编译成功不代表所有功能已验证。
+构建产物为 `app/build/PaperDock.app`，脚本不会自动启动应用。双击应用后，默认使用当前用户的 Application Support/PaperDock 保存数据；开发时的隔离运行和测试方式见 [app/README.md](app/README.md)。当前仍为试用阶段，最新 0007 增量尚未完成完整功能验收，编译成功不代表所有功能已验证。
 
 ## 仓库内容
 

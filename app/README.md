@@ -2,6 +2,14 @@
 
 正式实现位于本目录，与 `prototype/`、`experiments/` 及旧库无代码/数据复用关系。采用 Swift + SwiftUI A三栏、AppKit 浮动窗口/边缘、NSTextView 正文、Core Data 多记录（Note/Todo/Settings 三实体）；不以单记录 JSON 快照充当产品。当前支持范围仅本机 macOS 26.5.1 arm64、单屏普通窗口；版本号不是发布版本。
 
+## 当前源码与阅读入口（2026-10-25 Harness 整理）
+
+长期实现说明见[项目入口](../AGENTS.md)、[工程结构](../docs/harness/rules/工程结构.md)、[业务模型](../docs/harness/wiki/业务模型.md)、[数据模型](../docs/harness/wiki/数据模型.md)和[接口协议](../docs/harness/wiki/接口协议.md)；验证选择见[测试规范](../docs/harness/rules/测试规范.md)。本文件原有章节保留命令与阶段历史，不独立维护第二套当前模型。下文“本轮/当前/PID/无Git/未迁移”等语句属于原记录时点，不能覆盖当前源码与本轮授权。
+
+源码已包含 0007 的设置页高度输入/保存/生效值/反馈，默认 190pt 只用于新库或缺字段，已存 177.5 等值不覆盖；有限范围 175…1000pt，保存后下次打开/展开生效，当前打开窗不跳。按张 layer 与高度仍在 NoteLayout.json version=1，SQLite 三实体未变；缺字段兼容，null/错类型拒绝，无 v2 自动迁移。展开按当前全局高度而非旧尺寸。compact 的“添加待办”固定在滚动区外，新增按 UUID 定位/聚焦，候选未确认拒绝添加。
+
+已有专项入口是 `--test note-settings-rules`、`note-settings-compat`、`note-settings-controls`、`note-settings-todo-controls`、`note-settings-write`→`note-settings-read`，在同一当前候选上显式运行；旧 test.sh 不自动包含这些套件。[0007 执行记录](../docs/requirements/0007-note-layer-height/progress.md)与[反馈实现审查](../docs/requirements/0007-note-layer-height/feedback-implementation-review.md)保留原始成功/失败及真人/标准 ready 缺口；不以历史程序结果宣称当前 HEAD 全部通过。本次只整理文档，未重新构建/测试/安装。
+
 ## 0002 增量：钉住与列表右键删除
 
 本轮新增整张锁定：浮窗顶部“钉住”，锁后禁止移动、缩放、标题正文、待办、配色、收纳、删除及窗口关闭；顶部仅保留解锁入口，管理器同一ID同步只读且可解锁。普通应用退出仍走原保存链。锁定/解锁不改内容修改日期，正常重开恢复钉住时的位置与尺寸、锁状态。解锁后可继续原操作；不新增多屏恢复策略或全窗口布局保存。

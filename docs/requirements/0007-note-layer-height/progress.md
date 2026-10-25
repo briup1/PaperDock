@@ -1,6 +1,8 @@
-# 0007 执行记录：190pt反馈修正已实现，待本轮独立审查与体验
+# 0007 执行记录：190pt反馈修正独立审查已完成，仍待真人体验
 
-当前执行阶段：verifying，不标done。当前反馈修正候选为下方“v0.5反馈修正增量”的candidate-final；上轮candidate-03与独立审查仅为历史证据，不自动覆盖本轮新增行为。
+当前执行阶段：verifying，不标done。最新反馈修正对象为下方“v0.5反馈修正增量”的candidate-final；[本轮独立反馈审查](feedback-implementation-review.md)已完成、无新增代码阻断，协调者后续已记录获准安装启动，但不等于标准ready或全部验收。上轮candidate-03、旧标题中的“当前”及旧待办保留为分阶段历史，不自动覆盖本轮新增行为。
+
+2026-10-25 Harness 整理只更正本页导航/状态引用，未重测、核验运行进程或批准新交付；历史PID、快照与源码差异以各阶段记录为准。
 
 ## 范围、授权和单包计划
 
@@ -34,7 +36,7 @@
 
 可复核diff：`/Users/ziyun/workdir/self_project/PaperDock/artifacts/developer/note-settings-01/review/tracked-task.diff`；新文件／文档原样副本和未跟踪列表同目录，不能用tracked diff替代。
 
-## 唯一当前候选
+## v0.4阶段候选（历史，后续反馈候选见下文）
 
 源码快照：`/Users/ziyun/workdir/self_project/PaperDock/artifacts/developer/note-settings-01/candidate-03/source`。
 
@@ -92,7 +94,7 @@
 
 PID99083，真实wait=1、进程结束，normal-exit.txt存在，但同PID gui-result.json为status=failed、completed=false，failure=`real close stashes`。定位HEAD Application.swift旧探针仍对borderless无系统关闭按钮的窗performClose(nil)；本轮不改他人Application或快照HEAD来伪造通过。失败保留，正常保存标记**不等于GUI通过**。candidate-03未改产品逻辑，仅加强测试，故不再重复同一已知GUI失败。
 
-### candidate-03（当前）
+### candidate-03（v0.4阶段，历史）
 
 只加强测试至默认270宽短窗、展开失败保护、1000超屏可达及图像。产品输入与candidate-02一致，未因测试行号变化机械重跑所有不变套件；前述相关通过可按manifest逐文件核对复用。
 
