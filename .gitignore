@@ -1,0 +1,37 @@
+# macOS / editor files
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local workspaces, evidence, user data and distribution bundles
+/.work/
+/artifacts/
+/dist/
+/progress.md
+/experiments/native-spike/*evidence/
+
+# Build products and caches
+build/
+.build/
+DerivedData/
+*.app/
+__pycache__/
+*.py[cod]
+
+# Credentials and runtime data
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log
+instance.lock
+NoteLayout.json

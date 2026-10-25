@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">PaperDock — 蓝色 P 便签</title>
+  <desc id="desc">蓝色圆角方形底，白色字母P，右上浅蓝折角象征纸张。</desc>
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#438BFA"/><stop offset="1" stop-color="#1856CE"/></linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#blue)"/>
+  <path d="M330 774V286Q330 250 366 250H590L700 360V414Q700 578 536 578H434V774Q434 790 418 790H346Q330 790 330 774Z M434 354V474H532Q596 474 596 414Q596 354 532 354Z" fill="#FFFFFF" fill-rule="evenodd"/>
+  <path d="M590 250V328Q590 360 622 360H700Z" fill="#A9D5FF"/>
+</svg>

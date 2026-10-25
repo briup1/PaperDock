@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="wl-qa-test-planner"><meta name="artifact-schema-version" content="1"><meta name="source-sha256" content="9265dff55dc1e0c72ac8c9ba2bf449631210928342950857d728516c8076cbf5"><title>用例0002：钉住与右键删除 · ready</title><style>
+:root{--bg:#F7F6F3;--fg:#2F3437;--muted:#787774;--line:#EAE7E0;--accent:#9F2F2D;--soft:#FDEBEC}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 'Plus Jakarta Sans','PingFang SC','Microsoft YaHei',sans-serif}
+a{color:var(--accent);text-underline-offset:3px;overflow-wrap:anywhere}button{font:inherit;color:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.shell{max-width:1520px;margin:auto;display:grid;grid-template-columns:290px minmax(0,1fr);gap:42px;padding:32px}
+aside{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto;padding-right:12px;min-width:0}
+.eyebrow{font:11px/1.6 'JetBrains Mono',ui-monospace,monospace;color:var(--accent);letter-spacing:.06em}
+h1,h2{font-family:'Instrument Serif','Songti SC','SimSun',serif;letter-spacing:-.02em;font-weight:500}h1{font-size:29px;line-height:1.35}h2{font-size:32px;margin:12px 0 24px}h3{font-size:19px;margin:30px 0 12px}p{margin:13px 0}strong{font-weight:650}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0}.chip{display:inline-block;border:1px solid var(--line);background:white;border-radius:999px;padding:3px 9px;font:11px/1.7 ui-monospace,monospace}.warning{background:#FBF3DB;color:#956400}
+nav{display:grid;gap:5px;margin:24px 0}nav a{display:block;text-decoration:none;color:var(--fg);padding:9px 10px;border-left:2px solid transparent;font-size:13px;border-radius:0 4px 4px 0}nav a:hover{background:white}nav a.active{background:var(--soft);border-left-color:var(--accent);color:var(--accent)}
+main{min-width:0;max-width:1040px}.crumb{font:12px ui-monospace,monospace;color:var(--muted)}.crumb:before{content:'●';color:var(--accent);margin-right:9px}section{animation:appear .5s cubic-bezier(.16,1,.3,1)}section[hidden]{display:none}@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+pre{background:#26221E;color:#EDE8E0;padding:20px;border-radius:6px;overflow:auto;font:14px/1.8 'JetBrains Mono',ui-monospace,monospace;white-space:pre;max-width:100%}code{background:#F0EEE9;color:#2F3437;padding:2px 5px;border-radius:4px}pre>code{display:block;background:transparent;color:inherit;padding:0;border-radius:0;font:inherit}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;margin:18px 0}table{border-collapse:collapse;width:100%;font-size:13px;background:white}th{font:12px/1.7 ui-monospace,monospace;background:#FBFAF7;text-align:left}th,td{border:1px solid var(--line);padding:11px 12px;vertical-align:top;min-width:130px}td{overflow-wrap:anywhere}th:first-child,td:first-child{min-width:145px}ul{padding-left:23px}li{margin:9px 0}li.story{border-left:2px solid var(--accent);background:white;padding:12px 16px;list-style:none;margin-left:-23px}li.story strong{color:var(--accent)}
+dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;margin:14px 0}dt{font-weight:650}dd{margin:0;min-width:0}.pager{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:24px 0;margin-top:30px}.pager button{border:1px solid var(--line);border-radius:6px;padding:12px 16px;background:white}.pager button:disabled{color:#A8A49C;cursor:default}.source{color:var(--muted);font-size:12px;overflow-wrap:anywhere;margin-top:24px}
+@media(max-width:859px){.shell{display:block;padding:20px}aside{position:static;max-height:none;padding:0}nav{grid-template-columns:repeat(2,minmax(0,1fr));margin:16px 0;gap:4px}main{max-width:none}h1{font-size:25px}h2{font-size:27px}dl{grid-template-columns:1fr;gap:4px}dd{margin-bottom:10px}pre{padding:14px}th,td{min-width:150px}}
+@media(prefers-reduced-motion:reduce){section{animation:none}}
+</style></head>
+<body><div class="shell"><aside><div class="eyebrow">wl-qa-test-planner<br>产物规范：1</div><h1>用例0002：钉住与右键删除</h1><div class="chips"><span class="chip warning">status: ready</span><span class="chip">execution_phase: planning</span><span class="chip">version: 0.1</span><span class="chip">created: 2026-10-24</span></div><p class="chip warning">用例预期与执行结果分开 · 非测试通过</p><nav aria-label="章节"><a href="#sec-1">01 / 范围、入口与公共准备</a><a href="#sec-2">02 / US08：锁定与恢复</a><a href="#sec-3">03 / US09：列表直接整理</a><a href="#sec-4">04 / 覆盖与缺口</a></nav><div class="source"><a href="test-cases.wl-qa-test-planner.md">Markdown 唯一正文</a><br>批准证据：用户确认整张锁定/重启保留及右键删除口径后回复全部ok立即开发；具体用例待独立静态复核，不代表运行通过<br>HTML 由 render-docs.py 生成；视觉检查与结果见 <a href="../../prototype-validation.md">../../prototype-validation.md</a>（生成器不执行视觉验收）。</div></aside><main><section id="sec-1" aria-labelledby="title-1"><div class="crumb">SEC 01 / 04</div><h2 id="title-1">范围、入口与公共准备</h2><p>依据<a href="requirement.wl-req-confirm.html">需求v0.1</a>。正式本机Mac单屏普通窗口开发版，运行入口见app/README.md，不使用网页原型。隔离新目录和合成数据；A标题“报价跟进”、正文“明天确认报价”、两条待办一完成一未完成；B标题“周末清单”、正文“公园散步”。不同分支独立夹具，不共写用户manual目录，不改系统时钟。记录稳定ID、内容修改时间、纸色与窗口坐标；所有截图仅本任务窗口。执行前核对版本hash，结束正常退出自有实例并核对PID，不强杀或改变权限。</p>
+<p>用例编号延续0001，不重抄其14条步骤。旧规则最小回归引用<a href="../0001-local-notes/test-cases.wl-qa-test-planner.md">0001 v0.3 TC-005、008、010、011、014</a>，只覆盖直接受影响路径。<a href="../../../../AICodingBank/tools/execution-profiles/test-execution.md">统一执行记录</a>；实际运行另存唯一result.json，不在这里填运行结果。</p></section><section id="sec-2" aria-labelledby="title-2"><div class="crumb">SEC 02 / 04</div><h2 id="title-2">US08：锁定与恢复</h2><h3>TC-015：顶部钉住与整张锁定</h3>
+<p>对应需求（Trace）：R01、R02、D01；优先级：P0。</p>
+<p><strong>测试场景</strong>：独立A便签钉住后限制操作，解锁恢复且B不受影响。</p>
+<p><strong>测试数据</strong>：公共A/B，A浮窗可见并移到屏幕中部，记录frame与内容时间。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. A顶部点击钉住
+   预期：显示已锁定/解锁入口；位置不跳，内容/待办/颜色/内容修改日期不变。
+2. 在A分别尝试拖标题栏、拖缩放边、改标题/正文、待办改字/勾选/新增/移除、纸色/收纳及窗口关闭
+   预期：移动/缩放无效，所有修改入口禁用或拒绝；A保持可见且原数据不变，仅解锁可用。
+3. 操作B正文追加“带水”并移动一次
+   预期：B正常可用，不因A锁定被全局锁住。
+4. A点击解锁，移动/缩放后编辑标题正文，操作待办、配色、关闭收纳并找回
+   预期：原有功能恢复，续写仍是同一A，无重复记录；仅内容改动更新日期。</code></pre>
+<h3>TC-016：跨入口与迟到草稿不可绕过锁定</h3>
+<p>对应需求（Trace）：R01、R02、D01；优先级：P0。</p>
+<p><strong>测试场景</strong>：浮窗与管理器同时打开同一A，旧操作不能在A钉住后提交修改。</p>
+<p><strong>测试数据</strong>：公共A/B；每个分支从未锁A开始，保存内容、颜色、日期与设置快照。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. A浮窗钉住，在管理器选A
+   预期：标题正文/待办/纸色/收纳/删除同样不可改；能辨认锁定，解锁仍可达。
+2. 在管理器打开A配色预览但不应用，再从A浮窗钉住后尝试提交该旧草稿
+   预期：A与已有颜色/新建配色设置不被旧草稿改变，不能因范围改固定/随机绕过此张锁定。
+3. 独立分支先请求删除A，尚未确认时钉住A，再确认旧删除请求
+   预期：A不进回收站、不收纳；B不变；取消旧请求也不改变数据。
+4. A正文有一次尚未确认的中文组合输入时尝试钉住，再确认候选或继续输入
+   预期：锁定生效后不再接受内容修改；锁定前有效正文保留，不提前把未确认候选伪作已保存，解锁后编辑可继续。</code></pre>
+<h3>TC-017：正常退出重开保留锁定和位置</h3>
+<p>对应需求（Trace）：R02、D02；优先级：P0。</p>
+<p><strong>测试场景</strong>：同一A钉住后正常退出重开，状态与位置一致。</p>
+<p><strong>测试数据</strong>：公共A/B；A位于当前主屏可用区域中部，记录A的ID/frame/原时间/正文/待办/颜色。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 移动A到可辨认位置，钉住，正常菜单退出并确认进程退出
+   预期：保存成功；内容修改日期不因移动/钉住变更。
+2. 同目录新进程重开，不预置或重置数据
+   预期：同一A可见、保持锁定并位于原位置，正文/标题/待办/颜色/内容日期一致；B未被误锁。
+3. 解锁A后编辑、正常退出重开
+   预期：A保持解锁，原编辑正常保留，不因历史锁定永久只读。
+4. 在隔离副本打开原0.1.0-local旧库，比较原有多记录/待办/设置
+   预期：兼容读入且旧记录默认未锁；不能清空旧库。加载/升级失败可见报错并保留原件，不假成功。</code></pre></section><section id="sec-3" aria-labelledby="title-3"><div class="crumb">SEC 03 / 04</div><h2 id="title-3">US09：列表直接整理</h2><h3>TC-018：右键未选中卡片精准删除及取消</h3>
+<p>对应需求（Trace）：R03、D03；优先级：P0。</p>
+<p><strong>测试场景</strong>：全部便签选A时右键B，确认对象不串到A。</p>
+<p><strong>测试数据</strong>：未锁A/B均在全部列表，A为当前右侧编辑记录，记录两ID和原数据。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 右键B卡片，点击删除，再取消确认
+   预期：菜单有删除；确认对象是B，A/B内容/可见状态/日期均不变。
+2. 再右键B删除并确认
+   预期：只有B移入回收站且其浮窗收起，A保留且不被误删；B原内容/日期保留。
+3. 回收站恢复B
+   预期：同一B恢复为收纳，原数据不变，无永久删除。
+4. 在全部列表空白处右键
+   预期：没有针对某张记录的删除，不以当前选择偷偷删除A。
+5. 独立分支恢复未锁A/B，分别在正文末追加“共同检索Z219”，搜索该词，选A后右键匹配卡片B删除并确认
+   预期：两卡片原先均匹配；仍以B的稳定ID为对象，不按结果索引或当前选择误删。</code></pre>
+<h3>TC-019：锁定卡片右键删除禁用与解锁恢复</h3>
+<p>对应需求（Trace）：R01、R02、R03、D01、D03；优先级：P0。</p>
+<p><strong>测试场景</strong>：A已锁定时，列表右键和旧请求均不允许删除。</p>
+<p><strong>测试数据</strong>：公共A钉住，B未锁。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 全部列表右键A
+   预期：删除置灰不可选；A保持可见、内容和日期不变。
+2. 右键B，取消或确认按TC-018执行
+   预期：B菜单可用，不因A锁定置灰。
+3. 解锁A后再次右键A，点删除并确认
+   预期：删除恢复可用，只有A入回收站，不改B。</code></pre></section><section id="sec-4" aria-labelledby="title-4"><div class="crumb">SEC 04 / 04</div><h2 id="title-4">覆盖与缺口</h2><p>R01→TC-015/016/019；R02→TC-015/016/017；R03→TC-018/019。普通单屏窗口是支持边界，位置不扩展多屏/断屏策略。不承诺强杀/断电零丢失；程序设置窗口frame不能冒充真人拖动拒绝，真实右键菜单/中文候选需单独证据。生成用例非运行通过，独立审查与执行结果分开。</p></section><div class="pager"><button id="prev">← 上一节</button><button id="next">下一节 →</button></div></main></div><script>
+const panels=[...document.querySelectorAll('main section')], links=[...document.querySelectorAll('nav a')];let current=0;
+function show(i,scroll=false){current=Math.max(0,Math.min(i,panels.length-1));panels.forEach((p,n)=>p.hidden=n!==current);links.forEach((a,n)=>{a.classList.toggle('active',n===current);if(n===current)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});document.getElementById('prev').disabled=current===0;document.getElementById('next').disabled=current===panels.length-1;if(scroll)document.querySelector('main').scrollIntoView({block:'start'})}
+function hash(){const id=decodeURIComponent(location.hash.slice(1)),target=id&&document.getElementById(id);if(target){const panel=target.closest('section');if(panel)show(panels.indexOf(panel))}else show(0)}
+links.forEach((a,i)=>a.addEventListener('click',()=>show(i,true)));window.addEventListener('hashchange',hash);document.getElementById('prev').onclick=()=>{show(current-1,true);location.hash=panels[current].id};document.getElementById('next').onclick=()=>{show(current+1,true);location.hash=panels[current].id};document.addEventListener('keydown',e=>{if(e.altKey||e.metaKey||e.ctrlKey||e.target.closest('input,textarea,select,button'))return;if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();show(current+(e.key==='ArrowDown'?1:-1),true);location.hash=panels[current].id}});hash();
+</script></body></html>

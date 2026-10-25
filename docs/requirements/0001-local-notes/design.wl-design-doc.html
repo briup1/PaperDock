@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="wl-design-doc"><meta name="artifact-schema-version" content="1"><title>PaperDock · Mac 本地版实施方案</title>
+<style>
+:root{--bg:#F7F6F3;--fg:#2F3437;--muted:#787774;--line:#EAE7E0;--accent:#9F2F2D;--soft:#FDEBEC}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,'PingFang SC','Microsoft YaHei',sans-serif}a{color:var(--accent);text-underline-offset:3px;overflow-wrap:anywhere}.shell{display:grid;grid-template-columns:290px minmax(0,1fr);gap:40px;max-width:1450px;margin:auto;padding:32px}aside{position:sticky;top:25px;align-self:start;max-height:calc(100vh - 50px);overflow:auto}.eyebrow{font:11px/1.6 ui-monospace,monospace;color:var(--accent);letter-spacing:.06em}h1,h2{font-family:Georgia,'Songti SC',serif;font-weight:500;letter-spacing:-.02em}h1{font-size:29px;line-height:1.35;margin:18px 0}h2{font-size:30px;margin:12px 0 22px}h3{font-size:17px;margin:26px 0 10px}p{margin:12px 0}.muted,small{color:var(--muted)}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{font:11px/1.7 ui-monospace,monospace;border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:#fff}.warn{color:#956400;background:#FBF3DB}.pass{color:#346538;background:#EDF3EC}nav{display:grid;gap:5px;margin:25px 0}nav a{font-size:13px;color:var(--fg);text-decoration:none;border-left:2px solid transparent;padding:9px 10px;border-radius:0 4px 4px 0}nav a.active{background:var(--soft);color:var(--accent);border-left-color:var(--accent)}main{min-width:0}section[hidden]{display:none}section{animation:appear .4s ease}@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.crumb{color:var(--muted);font:12px ui-monospace,monospace}.crumb:before{content:'●';margin-right:9px;color:var(--accent)}.callout{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:5px;padding:14px 18px;margin:18px 0}.callout.warning{border-left-color:#956400;background:#FBF3DB}.table-wrap{max-width:100%;overflow:auto;margin:18px 0;border:1px solid var(--line);border-radius:6px}table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}th{background:#FBFAF7;font:12px/1.6 ui-monospace,monospace;text-align:left}th,td{padding:11px 13px;border:1px solid var(--line);vertical-align:top;min-width:125px}pre{overflow:auto;padding:18px;border-radius:6px;background:#26221E;color:#EDE8E0;font:14px/1.8 ui-monospace,monospace;white-space:pre;max-width:100%}code{padding:2px 5px;border-radius:4px;background:#F0EEE9;color:#2F3437}pre>code{display:block;padding:0;background:transparent;color:inherit;font:inherit}dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px}dt{font-weight:600}dd{margin:0}li{margin:8px 0}details{border:1px solid var(--line);background:#fff;border-radius:6px;padding:12px 16px;margin:16px 0}summary{cursor:pointer;color:var(--accent)}button{font:inherit;cursor:pointer;padding:10px 15px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--fg)}button:disabled{opacity:.4;cursor:default}.pager{display:flex;justify-content:space-between;margin:30px 0;border-top:1px solid var(--line);padding-top:20px}a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.source{font-size:12px;color:var(--muted);margin-top:20px;overflow-wrap:anywhere}@media(max-width:859px){.shell{display:block;padding:20px}aside{position:static;max-height:none}nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}h1{font-size:25px}h2{font-size:26px}dl{grid-template-columns:1fr}pre{padding:14px}th,td{min-width:145px}}@media(prefers-reduced-motion:reduce){section{animation:none}}
+</style></head><body>
+<div class="shell"><aside><div class="eyebrow">wl-design-doc<br>产物规范：1</div><h1>PaperDock<br>从原型到 Mac 本地版</h1><div class="chips"><span class="chip" id="status-chip"></span><span class="chip">方案 0.2</span><span class="chip">需求 0001 / 0.3</span><span class="chip">2026-10-24</span></div><p class="muted" id="choice-label"></p><nav aria-label="章节"><a href="#goal">01 / 目标与当前判断</a><a href="#capture">02 / 随手拖出与继续编辑</a><a href="#find">03 / 集中管理与按内容找回</a><a href="#save">04 / 纸色、保存与重开</a><a href="#boundaries">05 / 共用边界与取舍</a><a href="#accept">06 / 推进条件与验收</a></nav><div class="source"><a href="requirement.wl-req-confirm.html">已批准产品需求</a> · <a href="test-cases.wl-qa-test-planner.html">用例 v0.3</a><br>原型与交互已获用户确认；用户本轮已批准方案v0.2，选择A三栏及当前Mac单屏普通窗口边界。<br>创建 / 更新：2026-10-24</div></aside>
+<main>
+<section id="goal"><div class="crumb">SEC 01 / 06</div><h2>先让一张便签在 Mac 上可靠地工作</h2><p>用户正在浏览网页，想到“明天联系客户确认报价”，从屏幕边缘拖出便签写下；收纳后能通过日期、标题和全文搜索找回。关闭软件再打开，记录和配色选择仍在。这是本地个人效率工具，不是知识库、云同步服务或跨平台工程。</p><div class="callout"><strong>推荐：Swift＋SwiftUI＋AppKit＋NSTextView＋Core Data。</strong><br>普通管理界面用 SwiftUI；独立窗口、焦点与边缘入口用 AppKit；正文用系统文本编辑器；记录与设置保存在本机。无服务器、账号或第三方运行时。</div><h3>已经证明的部分</h3><p>当前机器 macOS 26.5.1／arm64／Swift 6.3.3，仅 Command Line Tools，已实际编译 AppKit/Core Data。实现者及未写代码的独立审查者分别在新目录以三个独立进程跑通窗口可见、中文字符串编辑、待办与 Core Data 保存、正常退出后固定／随机配色读回；反向失败码与坏库不覆盖另有独立检查。<strong>这些是程序自驱，不是真人输入或完整产品验收；SwiftUI承载及桥接尚未实测。</strong></p><div class="callout"><strong>关键人工验证现已补齐到本机单屏范围：</strong>用户已分步确认中文输入法、浏览器跨应用置顶/焦点、收纳找回与正常重启保留；新版入口的靠近探出、移开收回、拖出收回与再次唤出也反馈正常。协调者核对回调日志及两轮实例均正常退出。隐藏时仍保留右侧中段2pt命中条，不是零占用；这些结果不外推多屏、全屏、旧系统或完整产品。用户本轮已批准按此单屏普通窗口边界正式实施。</div><p>当前网页原型只在浏览器内工作、刷新丢数据；原生实验是可丢弃的一张便签，不直接升格成正式代码。用户本轮明确选择A的均衡三栏作为正式管理界面；B/C不进入首版。</p><details><summary>本轮证据与来源</summary><ul><li><a href="../../../experiments/native-spike/README.md">原生实验 README</a>：环境、复跑命令、程序证据与历史未验边界；后续真人结果见方案第6节链接的两份manual-result.md，以后者为最新状态。</li><li><a href="../../native-readiness-review.md">独立用例与原生准备性审查</a>：G1–G4步骤已复核闭合，独立复跑命令、退出码与PID清理均有记录；不代表全部正式用例已执行。</li><li><a href="../../prototype-validation.md">网页原型实际走查</a>：不能代替原生证据。</li><li><a href="../../../prototype/paperdock.prototype.html">已确认原型 v0.3</a>：产品交互对照，不是运行原生程序。</li></ul></details></section>
+<section id="capture" hidden><div class="crumb">SEC 02 / 06</div><h2>想到一句话，不先打开管理器</h2><p><strong>当前：</strong>网页仅为产品原型。原生实验已用真实NSScreen坐标和非激活面板完成右侧中段2pt命中区→24pt探出；独立程序检查已通过，用户也实际确认靠近/离开/拖出/再次唤出正常。此处是本机单屏验证，不是全部屏幕边界与系统版本认证。</p><p><strong>同一例子：</strong>拖出后写“明天联系客户确认报价”，自动标题为“明天联系客”；补一条“核对价格”待办。便签可见时在普通窗口上方，点击其他应用后键盘应归其他应用，不因置顶就抢输入。</p><pre><code>原型：页面内拖出 → 网页编辑 → 内存保留
+
+目标〔新增原生承接，产品规则保持〕
+指针靠近屏幕边缘
+  ↓
+显示便签入口 → 向桌面拖出一张
+  ↓
+输入正文与待办，不必先起标题
+  ↓
+便签保持可见；焦点随实际点击转移
+  ├─ 继续使用其他应用 → 便签不抢键盘
+  └─ 点击便签 → 继续修改同一记录
+  ↓
+关闭便签 → 收纳，不删除
+  ↓
+菜单或管理器显式找回同一张</code></pre><h3>怎么接到系统能力</h3><pre><code>NSScreen 的屏幕与可用坐标
+  ↓
+AppKit 边缘入口 + 鼠标追踪/拖动
+  ↓
+创建唯一便签ID → AppKit 独立面板
+  ↓
+SwiftUI 控件 + 桥接 NSTextView 正文
+  ↓
+统一更新记录 → 本地保存 → 列表同步</code></pre><p>每张便签由同一窗口管理器按ID复用，不因菜单、拖动、列表点击产生多个副本；关闭映射为收纳。使用正常公开窗口层级控制普通窗口前显示，不使用极高系统层级盖住所有系统界面。</p><p>正文保留系统中文输入、选区、复制粘贴与撤销能力；待办用独立条目控件，含文字、完成状态、顺序。不从零造光标或把正文和待办塞成完整 Markdown 编辑器。系统输入法组合输入时不重建编辑器、不提前提交未确认文字。</p><h3>已经核实与还需核实</h3><p>实验的 <code>NSWindow.isVisible</code>、key window 与 first responder 分别观察；早期“可见就立即断言焦点”的时序错误已保留并修复。窗口level比较及同一应用普通演示窗口叠层只证明配置和应用内结果，不代表浏览器等其他应用前的实际行为。</p><p>推荐沿本轮已验证的自有窄非激活面板与NSTrackingArea追踪入口，不申请全局键盘监听或辅助功能权限。默认隐藏仍在主屏右侧中段保留2pt、130pt高的命中区，靠近展开24pt；拖动过程中不提前收回，松开完成或取消后收回。此占用是明确取舍；Dock位于右侧等冲突、多屏、全屏、Space须在后续支持范围中验证，不作“永远置顶”承诺。</p><p>对应 <a href="test-cases.wl-qa-test-planner.html">TC-001、TC-006、TC-010</a>。本机人工关键路径已有用户确认；完整正式入口和多条记录仍须按用例重跑，不能把实验通过直接记成成品验收。</p></section>
+<section id="find" hidden><div class="crumb">SEC 03 / 06</div><h2>收纳之后，仍能按最近改过的内容找回</h2><p><strong>当前：</strong>全部列表、正文摘要、标题、修改日期分组和搜索在网页原型已实际走查；本轮一张便签原生实验没有完整管理器，不能据此说原生搜索已实现。</p><p><strong>同一例子：</strong>昨天记录的报价便签今天补“确认40HQ价格”，应进入今天分组；收纳后搜索“40hq”仍能找到；手动命名“客户报价跟进”后，改正文不会覆盖标题。</p><pre><code>收纳或保留桌面便签〔保持同一记录〕
+  ↓
+打开全部便签 → 按最后内容修改日期分组
+  ↓
+看标题 + 正文摘要 + 可见/收纳状态
+  ↓
+搜索标题 / 正文 / 待办文字
+  ↓
+选中同一ID → 继续编辑或显示到桌面
+  ↓
+内容变化 → 更新日期与列表，不抢走编辑对象</code></pre><h3>改哪里、如何保持一致</h3><p>新增 SwiftUI 三栏管理器，使用同一份本地记录，不为窗口和列表分别保存两套正文。持久化记录保留ID、手动标题、正文、内容修改时间、可见/收纳、删除状态和单张纸色；待办按稳定ID关联便签并保持顺序。自动标题与摘要从内容推导，不额外维护容易过期的副本。</p><pre><code>Core Data 读取记录和待办
+  ↓
+按筛选 + 关键词取匹配集合
+  ↓
+按内容修改时间倒序 → 以本地自然日分组
+  ↓
+列表显示派生标题与摘要
+  ↓
+编辑器始终绑定稳定便签ID
+  ↓
+内容改变后重算匹配，不暗换编辑对象</code></pre><p>只在没有手动标题时，从正文及待办可见内容取前5个字素；忽略原型已接受的空白/行首列表标记，Swift以Character处理组合字符。单条标题规则应有纯待办、换行、家庭表情等测试，不把实验“只取正文”当正式规则。</p><p>正文、标题、待办增删改或完成状态更新内容修改时间；移动、缩放、纸色、收纳、删除恢复不更新。跨日期边界重新计算组标题。相同修改时间以稳定ID作次序兜底，不赋予其额外业务含义。</p><p>搜索沿用已接受规则：标题、完整正文与待办，英文大小写不敏感，当前筛选限定范围；回收站单独检索。初期个人本地查询先用Core Data筛选与必要派生匹配，不引入搜索服务器或未证明需要的索引系统。搜索中编辑导致不再匹配时，保留当前编辑器并提示；不得悄悄把后续输入写给另一个结果。</p><p>对应 <a href="test-cases.wl-qa-test-planner.html">TC-002～006、TC-010～012</a>；实验不实现的管理链路须留到正式应用逐项验收，不能由原型覆盖。</p></section>
+<section id="save" hidden><div class="crumb">SEC 04 / 06</div><h2>颜色跟着便签，设置跟着下一张</h2><p><strong>当前：</strong>网页刷新会重置。原生实验用Core Data SQLite存一张便签快照，三个进程正常退出、重开已读回纸色、模式和随机池；实验色值与单待办模型是简化，不是最终产品数据模型。</p><p><strong>同一例子：</strong>报价便签保持淡绿；用户在选色盘调出蓝色，选择“以后固定”，下一张才用蓝色。若选择“加入随机”，蓝色进入六种内置纸色的池，重复加入不增份数。退出重开仍保留这两类选择。</p><pre><code>新建便签
+  ↓
+读取当前新建配色设置
+  ├─ 固定 → 使用固定色
+  └─ 随机 → 从内置六色 + 主动加入色取一个〔允许重复〕
+  ↓
+写入这张便签的实际纸色 → 后续不跟默认变化
+
+选色盘调整 → 实时预览〔不保存〕
+  ├─ 取消/关闭 → 丢弃本轮草稿
+  └─ 应用
+       ├─ 只改当前 → 修改单张颜色
+       ├─ 以后固定 → 保存模式与固定色，旧便签不改
+       └─ 加入随机 → 去重入池并切随机，旧便签不改
+  ↓
+正常退出 → 再开同一数据目录 → 记录与设置读回</code></pre><h3>本地数据与草稿怎么分开</h3><pre><code>正文/待办/标题已确认的编辑
+  ↓
+统一记录状态 → Core Data 同一写入边界
+  ↓
+成功：显示已保存
+失败：显示未保存、保留内存编辑，不假报成功
+  ↓
+退出前提交当前有效编辑
+  ├─ 保存成功 → 正常退出
+  └─ 保存失败 → 提示并阻止静默退出
+
+配色预览草稿〔只在弹层内〕
+  ↓ 只有应用才提交
+单张记录 或 新建设置事务 → Core Data保存</code></pre><p>正式模型采用便签、待办、配色设置三个直接业务边界。设置包含随机/固定模式、固定色、主动加入的自定义色及保存的颜色；随机池用已批准内置六色加用户加入色推导去重。每张便签保存已经选中的实际色，不在每次显示时重抽。</p><p>内置色沿用原型：纸白#FFFEFA、暖米#F5EEDC、羊皮纸#E9DDC6、浅灰#EDF0ED、淡绿#E5EEDC、深灰#303731。选色盘为主、色号辅助；正文自动匹配深浅文字，控件与选中状态须另外验可读性，不把正文对比度当整页验收。</p><p>正式应用数据放用户Application Support的本应用私有目录；开发/实验可注入独立目录，不能与日常数据混用。Core Data加载失败不当空库覆盖；迁移前保留旧库并使用有版本的模型，迁移失败保留原文件和可见错误，不自动清空。无现有正式库需要回填，不做云端迁移或复杂同步。</p><p>写入频率与正文输入法配合由正式实现聚焦确定，不承诺未测的毫秒时限。目标是正常退出后完整保留；磁盘满、断电、强杀下零丢失不在已确认保证内，不能用正常重启通过替代故障恢复测试。</p><p>对应 <a href="test-cases.wl-qa-test-planner.html">TC-007～009、TC-014</a>。重启验收需比对ID、内容、两种待办状态、单张色、收纳、固定色和随机池，而不只是看到文字还在。</p></section>
+<section id="boundaries" hidden><div class="crumb">SEC 05 / 06</div><h2>只增加本地便签所需的系统能力</h2><div class="table-wrap"><table><thead><tr><th>专项</th><th>判断与最小处理</th></tr></thead><tbody><tr><td>数据与存储</td><td>涉及：内容、状态和配色跨正常重启保留；Core Data，加载失败不覆盖。</td></tr><tr><td>接口与协作</td><td>涉及本进程模块协作：稳定ID连接窗口/编辑器/列表/存储，无对外API。</td></tr><tr><td>状态与异步</td><td>涉及：输入法组合输入、保存状态、配色草稿与应用；统一写入边界，UI在主线程，不用两套编辑状态。</td></tr><tr><td>安全与权限</td><td>涉及本机数据隔离与系统交互；不用全局键盘监听、屏幕录制或辅助功能作为默认依赖。权限确有必要先说明再授权。</td></tr><tr><td>性能与容量</td><td>待确认规模；目前无可承诺阈值。首版实测启动/输入/搜索，再据真实瓶颈优化，不先加缓存服务。</td></tr><tr><td>外部依赖/发布</td><td>无服务器、账户、CloudKit或第三方运行时；本轮不签名分发/上架。CLT可编译实验，不证明正式打包与旧系统兼容。</td></tr></tbody></table></div><h3>明确的取舍</h3><p>SwiftUI适合管理与设置，但不强求它独自完成特殊窗口行为；AppKit直接承接这部分。NSTextView保留成熟输入行为，待办独立控件，避免自研编辑器。Core Data已经在本机新进程读回，不为未来同步提前接CloudKit，也不引入Electron/Tauri来重写已确定的Mac定位。</p><p>实验中的Snapshot包只证明持久化机制；正式数据需要按便签查询与待办关联组织，不将实验代码原样搬进产品。最低macOS版本推荐15作为设计候选，但尚未在15验证；若最终只支持当前系统，须作为支持范围决定明确告知，不能默认降级。</p><h3>支持边界不偷换</h3><ul><li>普通窗口置顶是目标；全屏应用、Space与Stage Manager没有实际证据，不承诺覆盖。</li><li>历史常显标签已由新版隐藏探出实验替代并经用户验证；保留2pt命中区域的取舍必须在正式产品中明确，不能宣传为零占用。</li><li>不做同步、Windows/iPhone、图片、复杂富文本、标签、账号、支付或全局系统快捷键。</li><li>回收站只提供恢复，无自动清理/永久删除；后续不以“清理原型”为由删除用户记录。</li></ul></section>
+<section id="accept" hidden><div class="crumb">SEC 06 / 06</div><h2>关键实验已完成，已批准正式实施</h2><p>产品需求已获确认；本机单屏关键人工证据现已补齐，方案v0.2已由用户本轮批准，采用A三栏并进入正式实现。实验简化不直接搬成成品；SwiftUI承载、完整多记录管理与正式用例仍在实施和验收范围，不冒充已完成。</p><pre><code>当前已完成
+产品原型确认 + 原生框架/保存程序实验
+  ↓
+独立审查与新目录复跑〔已完成〕
+  ↓
+用户人工验证：边缘探出/拖动、IME、跨应用焦点〔本机通过〕
+  ↓
+明确2pt命中条及未验系统边界〔已记录〕
+  ↓
+用户批准本版实施方案〔已批准；本轮明确正式开发与独立验收〕
+       ↓
+正式开发：记录与恢复 → 管理找回 → 系统入口和视觉完善
+       ↓
+独立代码检查 + 在正式Mac应用按用例验收</code></pre><h3>人工检查只需一张合成便签</h3><p>用实验的手动运行入口，右侧小标签拖向桌面，输入法实际输入中文、完成一次候选确认，再点浏览器等普通应用输入文字，观察便签是否仍可见且不抢键盘；回点便签继续编辑，关闭收纳、菜单找回，再正常退出重开。若系统弹权限框停止，不授予或绕过。实验只有一条待办，完整两状态同存与最终管理仍留正式实现验收。</p><p>上述人工步骤已分两轮由用户完成。<a href="../../../experiments/native-spike/manual-evidence/user-01/manual-result.md">首轮人工记录</a>与<a href="../../../experiments/native-spike/hover-evidence/manual-hover-01/manual-result.md">靠近探出人工记录</a>分别标明用户反馈、协调者日志核验及未覆盖项；所有手动实例已退出。用户随后明确要求采用A三栏、保障当前Mac单屏普通窗口场景，并组织正式开发与独立验收；这是本版批准依据，不包括发布或系统权限变更。</p><h3>后续最小交付范围</h3><ul><li>第一批“能记住”：正文、标题、待办、纸色、设置、本地保存与正常恢复。</li><li>第二批“能找回”：全部列表、内容日期、全文检索、收纳、删除恢复和编辑对象稳定。</li><li>第三批“用得舒服”：经验证的边缘/窗口行为、管理器选定外观与选色盘可读性。</li></ul><p>正式开发按同一持续实现者工作包推进；独立验收准备可并行，代码与GUI验收须等待冻结。工单仅引用同一来源用例，不另抄业务预期。</p><dl><dt>来源用例</dt><dd><a href="test-cases.wl-qa-test-planner.html">test-cases.wl-qa-test-planner v0.3</a>；G1–G4补齐后的独立复核单独记录。</dd><dt>本轮停止点</dt><dd>正式本地应用实现和独立验收；遇到权限/安装/发布或授权外写入即停。未验不得记完成。</dd><dt>用户待决定</dt><dd>本轮已批准方案v0.2、A三栏及当前Mac单屏普通窗口范围。多屏、全屏与旧系统不默认承诺；发布/权限/开机启动仍须另行授权。</dd></dl><details><summary>技术与实验依据（默认不打断阅读）</summary><p>环境、源代码hash、失败历史、独立数据目录、进程退出见实验README与独立审查。历史焦点失败及假退出码已保留；只采用修后有效证据，不能把一次成功说成长期稳定。</p><pre><code>实验：experiments/native-spike/
+本轮程序证据：evidence/gui-final-02/events.jsonl
+实现main.swift SHA256：
+1ad5d89141b98f54cdea908fc55aa5f6515b1fce80a6ef231409a9b43bf7b23b
+
+独立复跑：review-evidence/ 下独立新目录
+真人反馈与回调日志：两轮manual-result.md
+未申请系统权限；不外推多屏/全屏/旧系统</code></pre></details></section>
+<div class="pager"><button id="prev">← 上一节</button><button id="next">下一节 →</button></div></main></div>
+<script type="application/json" id="wl-design-meta">{"requirement_id":"0001","source_requirement":"requirement.wl-req-confirm.md","requirement_version":"0.3","design_version":"0.2","status":"approved","created":"2026-10-24","updated":"2026-10-24","chosen":"Swift+SwiftUI+AppKit+NSTextView+CoreData；A三栏，当前Mac单屏普通窗口","approval_evidence":"本会话用户在方案v0.2交付后明确：任务：采用 A 三栏管理界面，首版先保障当前 Mac 单屏、普通窗口场景 再组织正式开发与独立验收。批准本地正式实现及独立验收，不包含发布、安装工具、改权限或Git操作。","source_test_cases":{"path":"test-cases.wl-qa-test-planner.md","version":"0.3"},"decision_mode":"manual","recommendation":"Swift+SwiftUI+AppKit+NSTextView+CoreData；A三栏，当前Mac单屏普通窗口","recommendation_reason":"Mac本地定位与窗口/输入需求；当前CLT已真实编译运行AppKit/CoreData并跨进程保存恢复，避免网页运行时/服务器；用户已确认关键真人行为，正式产品须独立重验","critical_validation":{"status":"verified","scope":"本机macOS26.5.1单屏普通窗口；程序复跑及用户人工反馈，不外推完整产品","evidence":["../../../experiments/native-spike/README.md","../../native-readiness-review.md","../../../experiments/native-spike/manual-evidence/user-01/manual-result.md","../../../experiments/native-spike/hover-evidence/manual-hover-01/manual-result.md"],"limitations":["多屏/全屏/Space/Dock冲突未验","最低系统与SwiftUI桥接后验","实验单记录非正式产品验收"]},"delegation_evidence":null,"diagram_layout":"vertical-ascii"}</script>
+<script>
+const meta=JSON.parse(document.getElementById('wl-design-meta').textContent);document.getElementById('status-chip').textContent=meta.status==='draft'?'草稿 · 关键实验已核验，待批准':meta.status;document.getElementById('status-chip').classList.add('warn');document.getElementById('choice-label').textContent=meta.chosen?'当前选型：'+meta.chosen:'推荐原生路线；尚未批准或选定';const panels=[...document.querySelectorAll('main section')],links=[...document.querySelectorAll('nav a')];let active=0;function show(i,scroll=false){active=Math.max(0,Math.min(panels.length-1,i));panels.forEach((p,n)=>p.hidden=n!==active);links.forEach((a,n)=>{a.classList.toggle('active',n===active);if(n===active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});document.getElementById('prev').disabled=active===0;document.getElementById('next').disabled=active===panels.length-1;if(scroll)document.querySelector('main').scrollIntoView({block:'start'})}function fromHash(){const target=document.getElementById(location.hash.slice(1));const sec=target?.closest('section');show(sec?panels.indexOf(sec):0)}links.forEach((a,i)=>a.onclick=()=>show(i,true));window.addEventListener('hashchange',fromHash);document.getElementById('prev').onclick=()=>{show(active-1,true);location.hash=panels[active].id};document.getElementById('next').onclick=()=>{show(active+1,true);location.hash=panels[active].id};document.addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey||e.target.closest('input,textarea,button'))return;if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();show(active+(e.key==='ArrowDown'?1:-1),true);location.hash=panels[active].id}});fromHash();
+</script></body></html>
