@@ -79,7 +79,12 @@ import SwiftUI
     func menuItem(_ title: String, _ selector: Selector, _ key: String) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: selector, keyEquivalent: key); item.target = self; return item
     }
-    @objc func about() { NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "PaperDock", .applicationVersion: "0.1.1-local", .credits: NSAttributedString(string: "本机单屏普通窗口开发版 · 无云同步")]) }
+    @objc func about() {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.1.1"
+        let commit = Bundle.main.object(forInfoDictionaryKey: "PaperDockGitCommit") as? String
+        let label = commit.map { "\(version) (\($0.prefix(12)))" } ?? "\(version)-local"
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "PaperDock", .applicationVersion: label, .credits: NSAttributedString(string: "本机单屏普通窗口开发版 · 无云同步")])
+    }
     @objc func newNote() { model.newNote() }
     @objc func openManager() { manager.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true) }
     @objc func openSettings() {
