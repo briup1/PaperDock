@@ -122,6 +122,20 @@ struct SettingsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack { Text("设置与默认纸色").font(.title2.bold()); Spacer(); Button("完成") { if let closeWindow { closeWindow() } else { dismiss() } }.keyboardShortcut(.cancelAction) }
+            VStack(alignment: .leading, spacing: 5) {
+                HStack {
+                    Text("便签高度（pt）").font(.caption)
+                    TextField("190", text: $model.heightDraft).textFieldStyle(.roundedBorder)
+                        .accessibilityLabel("全局便签高度").onSubmit { model.saveHeight() }
+                    Button("保存") { model.saveHeight() }.accessibilityLabel("保存便签高度")
+                }
+                Text("175…1000；下次打开或展开生效").font(.caption2).foregroundStyle(.secondary)
+                if let message = model.heightFeedback {
+                    Text(message).font(.caption2).foregroundStyle(model.heightSaveFailed ? Color.red : Color.secondary)
+                }
+                Text("当前生效：\(model.store.defaultHeight.formatted()) pt").font(.caption2).foregroundStyle(.secondary)
+            }.padding(12)
+            Divider()
             Text("新建模式：\(model.store.settings.fixed ? "固定 \(model.store.settings.fixedColor)" : "随机配色")").font(.headline)
             Text("随机池（\(model.store.settings.pool.count)色）").font(.caption).foregroundStyle(.secondary)
             ScrollView(.horizontal) {

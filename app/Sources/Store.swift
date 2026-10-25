@@ -37,30 +37,38 @@ struct ColorSettings: Codable, Equatable {
     var pool: [String] { Array(Set(Self.builtins + added)).sorted() }
 }
 
+enum NoteLayer: String, Codable { case floating, desktop }
+enum NoteHeight {
+    static let initial: Double = 190
+    static let range: ClosedRange<Double> = 175...1000
+    static func valid(_ value: Double) -> Bool { value.isFinite && range.contains(value) }
+}
 struct NotePlacement: Codable, Equatable {
     static let collapsedHeight: CGFloat = 27
     var locked: Bool
     var collapsed: Bool
+    var layer: NoteLayer
     var x: Double
     var y: Double
     var width: Double
     var height: Double
-    init(locked: Bool, frame: NSRect, collapsed: Bool = false) {
-        self.locked = locked; self.collapsed = collapsed; x = frame.origin.x; y = frame.origin.y
+    init(locked: Bool, frame: NSRect, collapsed: Bool = false, layer: NoteLayer = .floating) {
+        self.locked = locked; self.collapsed = collapsed; self.layer = layer; x = frame.origin.x; y = frame.origin.y
         width = frame.width; height = frame.height
     }
-    private enum CodingKeys: String, CodingKey { case locked, collapsed, x, y, width, height }
+    private enum CodingKeys: String, CodingKey { case locked, collapsed, layer, x, y, width, height }
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         locked = try c.decode(Bool.self, forKey: .locked)
         // Only a missing field is legacy data; null or the wrong type must still fail.
         collapsed = c.contains(.collapsed) ? try c.decode(Bool.self, forKey: .collapsed) : false
+        layer = c.contains(.layer) ? try c.decode(NoteLayer.self, forKey: .layer) : .floating
         x = try c.decode(Double.self, forKey: .x); y = try c.decode(Double.self, forKey: .y)
         width = try c.decode(Double.self, forKey: .width); height = try c.decode(Double.self, forKey: .height)
     }
     var valid: Bool {
         [x, y, width, height].allSatisfy(\.isFinite) && abs(x) <= 100_000 && abs(y) <= 100_000
-            && width >= 270 && height >= 350 && width <= 100_000 && height <= 100_000
+            && width >= 270 && height >= NoteHeight.range.lowerBound && width <= 100_000 && height <= 100_000
     }
     // Stored frame always describes the expanded size anchored below the current top edge.
     var frame: NSRect { NSRect(x: x, y: y, width: width, height: height) }
@@ -69,10 +77,22 @@ struct NotePlacement: Codable, Equatable {
     }
     func moved(to displayed: NSRect) -> NotePlacement {
         let expanded = collapsed ? NSRect(x: displayed.minX, y: displayed.maxY - height, width: displayed.width, height: height) : displayed
-        return NotePlacement(locked: locked, frame: expanded, collapsed: collapsed)
+        return NotePlacement(locked: locked, frame: expanded, collapsed: collapsed, layer: layer)
     }
 }
-private struct NoteLayout: Codable { var version = 1; var notes: [String: NotePlacement] = [:] }
+private struct NoteLayout: Codable {
+    var version = 1
+    var notes: [String: NotePlacement] = [:]
+    var defaultHeight = NoteHeight.initial
+    private enum CodingKeys: String, CodingKey { case version, notes, defaultHeight }
+    init(notes: [String: NotePlacement], defaultHeight: Double) { self.notes = notes; self.defaultHeight = defaultHeight }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decode(Int.self, forKey: .version)
+        notes = try c.decode([String: NotePlacement].self, forKey: .notes)
+        defaultHeight = c.contains(.defaultHeight) ? try c.decode(Double.self, forKey: .defaultHeight) : NoteHeight.initial
+    }
+}
 
 @MainActor final class Store: ObservableObject {
     @Published private(set) var notes: [Note] = []
@@ -85,6 +105,7 @@ private struct NoteLayout: Codable { var version = 1; var notes: [String: NotePl
     var beforeSave: (() throws -> Void)?
     var beforeLayoutSave: (() throws -> Void)?
     @Published private(set) var placements: [UUID: NotePlacement] = [:]
+    @Published private(set) var defaultHeight = NoteHeight.initial
     private var layoutURL: URL { directory.appendingPathComponent("NoteLayout.json") }
     private let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     private var lockFD: Int32 = -1
@@ -149,7 +170,7 @@ private struct NoteLayout: Codable { var version = 1; var notes: [String: NotePl
         guard FileManager.default.fileExists(atPath: layoutURL.path) else { return }
         do {
             let layout = try JSONDecoder().decode(NoteLayout.self, from: Data(contentsOf: layoutURL))
-            guard layout.version == 1 else { throw TestFailure(description: "不支持的锁定文件版本") }
+            guard layout.version == 1, NoteHeight.valid(layout.defaultHeight) else { throw TestFailure(description: "不支持的布局版本或无效便签高度") }
             var decoded: [UUID: NotePlacement] = [:]
             for (key, value) in layout.notes {
                 guard let id = UUID(uuidString: key), decoded[id] == nil, value.valid,
@@ -158,7 +179,7 @@ private struct NoteLayout: Codable { var version = 1; var notes: [String: NotePl
                 }
                 decoded[id] = value
             }
-            placements = decoded
+            placements = decoded; defaultHeight = layout.defaultHeight
         } catch { throw TestFailure(description: "无法读取锁定/位置文件，原文件已保留：\(error.localizedDescription)") }
     }
     func isLocked(_ id: UUID) -> Bool { placements[id]?.locked == true }
@@ -176,9 +197,28 @@ private struct NoteLayout: Codable { var version = 1; var notes: [String: NotePl
         guard !isLocked(id), let n = note(id), !n.deleted else { return false }
         if isCollapsed(id) == collapsed { return true }
         guard var placement = placement(id, displayedFrame: frame) else { return false }
+        if !collapsed {
+            placement.y += placement.height - defaultHeight
+            placement.height = defaultHeight
+        }
         placement.collapsed = collapsed
         guard save() else { return false }
         return persistPlacement(id, placement)
+    }
+    func layer(_ id: UUID) -> NoteLayer { placements[id]?.layer ?? .floating }
+    @discardableResult func setLayer(_ id: UUID, _ layer: NoteLayer, frame: NSRect? = nil) -> Bool {
+        guard !isLocked(id), let n = note(id), !n.deleted, n.visible else { return false }
+        if self.layer(id) == layer { return true }
+        guard var placement = placement(id, displayedFrame: frame) else { return false }
+        placement.layer = layer
+        guard save() else { return false }
+        return persistPlacement(id, placement)
+    }
+    @discardableResult func setDefaultHeight(_ height: Double) -> Bool {
+        guard NoteHeight.valid(height) else { error = "便签高度须为175…1000pt的有限数字"; return false }
+        if height == defaultHeight { return true }
+        guard persistLayout(placements, height: height) else { return false }
+        defaultHeight = height; return true
     }
     @discardableResult func updateFrame(_ id: UUID, _ frame: NSRect) -> Bool {
         guard !isLocked(id), note(id)?.deleted == false,
@@ -198,11 +238,14 @@ private struct NoteLayout: Codable { var version = 1; var notes: [String: NotePl
         guard placement.valid else { error = "未保存：便签位置或尺寸无效"; return false }
         if placements[id] == placement { return true }
         var next = placements; next[id] = placement
+        guard persistLayout(next, height: defaultHeight) else { return false }
+        placements = next; return true
+    }
+    private func persistLayout(_ next: [UUID: NotePlacement], height: Double) -> Bool {
         do {
             try beforeLayoutSave?()
-            let layout = NoteLayout(notes: Dictionary(uniqueKeysWithValues: next.map { ($0.key.uuidString, $0.value) }))
+            let layout = NoteLayout(notes: Dictionary(uniqueKeysWithValues: next.map { ($0.key.uuidString, $0.value) }), defaultHeight: height)
             try JSONEncoder().encode(layout).write(to: layoutURL, options: .atomic)
-            placements = next
             if !dirty { error = nil }
             return true
         } catch { self.error = "未保存便签整理状态：\(error.localizedDescription)"; return false }

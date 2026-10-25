@@ -89,6 +89,8 @@ struct NoteEditor: View {
     var compact = false
     @State private var draft: PaletteDraft?
     @State private var showCollapseError = false
+    @FocusState private var focusedTodo: UUID?
+    @State private var addedTodo: UUID?
     private var collapsed: Bool { compact && model.store.isCollapsed(id) }
     private var sidePadding: CGFloat { compact ? 14 : 24 }
     private var toolPadding: CGFloat { compact ? 9 : 16 }
@@ -107,10 +109,11 @@ struct NoteEditor: View {
                         }
                         Button(model.store.isLocked(id) ? "解锁" : "钉住", systemImage: model.store.isLocked(id) ? "pin.slash" : "pin") { model.toggleLock(id) }
                             .help(model.store.isLocked(id) ? "解锁此便签" : "钉住并锁定整张便签")
-                        Button("展开", systemImage: "plus") { model.toggleCollapsed(id) }
-                            .disabled(model.store.isLocked(id)).help("展开此便签")
-                        Button("收纳", systemImage: "xmark") { model.stash(id) }
-                            .disabled(model.store.isLocked(id)).help("收纳此便签")
+                        if !model.store.isLocked(id) {
+                            layerButton
+                            Button("展开", systemImage: "plus") { model.toggleCollapsed(id) }.help("展开此便签")
+                            Button("收纳", systemImage: "xmark") { model.stash(id) }.help("收纳此便签")
+                        }
                     }
                     .labelStyle(NoteToolLabelStyle(iconOnly: true)).font(.system(size: 12))
                     .buttonStyle(.borderless).controlSize(.small)
@@ -133,6 +136,7 @@ struct NoteEditor: View {
                                 .help(model.store.isLocked(id) ? "解锁此便签" : "钉住并锁定整张便签")
                         }
                         if !model.store.isLocked(id) {
+                            if n.visible { layerButton }
                             Button("纸色", systemImage: "paintpalette") { draft = PaletteDraft(store: model.store, noteID: id) }.help("选择便签纸色")
                             if compact {
                                 Button("管理", systemImage: "sidebar.left") { model.select(id); model.showManager?() }.help("管理全部便签")
@@ -153,41 +157,20 @@ struct NoteEditor: View {
                 .frame(minHeight: compact ? 22 : nil)
                 .padding(.horizontal, toolPadding).padding(.vertical, compact ? 2.5 : toolPadding)
                 Divider()
-                TextField("标题", text: Binding(get: { model.store.note(id)?.manualTitle ?? "" }, set: { value in model.store.edit(id) { $0.manualTitle = value } }), prompt: Text(n.title).foregroundColor(ColorValue.ink(n.color).opacity(0.7)))
-                    .font(.system(size: compact ? 15 : 25, weight: .semibold)).textFieldStyle(.plain)
-                    .accessibilityLabel("手动标题，清空恢复自动标题").padding(.horizontal, sidePadding).padding(.top, compact ? 12 : 22)
-                    .disabled(n.deleted || model.store.isLocked(id))
-                Text(n.modified.formatted(date: .abbreviated, time: .shortened) + " · 内容修改")
-                    .font(compact ? .system(size: 9) : .caption).opacity(0.6).frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, sidePadding).padding(.top, compact ? 4 : 8)
-                NoteBody(store: model.store, id: id, compact: compact).id(id).disabled(n.deleted || model.store.isLocked(id))
-                    .frame(minHeight: compact ? 60 : nil).modifier(CompactBodyClip(compact: compact))
-                Divider().padding(.horizontal, compact ? 12 : 18)
-                ScrollView {
-                    VStack(spacing: compact ? 6 : 10) {
-                        ForEach(n.todos) { todo in
-                            HStack(alignment: .top, spacing: compact ? 6 : 9) {
-                                Toggle("完成待办", isOn: Binding(get: { model.store.note(id)?.todos.first { $0.id == todo.id }?.done ?? false }, set: { value in model.store.edit(id) { note in if let i = note.todos.firstIndex(where: { $0.id == todo.id }) { note.todos[i].done = value } } }))
-                                    .labelsHidden().toggleStyle(.checkbox).accessibilityLabel("完成：\(todo.text)").colorScheme(ColorValue.ink(n.color) == .white ? .dark : .light)
-                                TextField("待办文字", text: Binding(get: { model.store.note(id)?.todos.first { $0.id == todo.id }?.text ?? "" }, set: { value in model.store.edit(id) { note in if let i = note.todos.firstIndex(where: { $0.id == todo.id }) { note.todos[i].text = value } } }))
-                                    .textFieldStyle(.plain).strikethrough(todo.done).opacity(todo.done ? 0.6 : 1)
-                                Button { model.store.edit(id) { $0.todos.removeAll { $0.id == todo.id } } } label: { Image(systemName: "minus.circle") }.buttonStyle(.borderless).accessibilityLabel("移除此待办")
-                            }.font(compact ? .system(size: 12) : nil).controlSize(compact ? .small : .regular).disabled(n.deleted || model.store.isLocked(id))
-                        }
-                    }.padding(.horizontal, compact ? 10 : 18)
-                        .padding(.top, compact ? 6 : 18).padding(.bottom, compact ? 0 : 18)
-                }.frame(height: compact ? (n.todos.isEmpty ? 0 : min(74, CGFloat(n.todos.count) * 24 + 6)) : nil)
-                    .frame(maxHeight: compact ? nil : (n.todos.isEmpty ? 0 : min(180, CGFloat(n.todos.count) * 43 + 20)))
-                if !n.deleted && !model.store.isLocked(id) {
-                    Button { model.store.edit(id) { $0.todos.append(Todo(text: "")) } } label: { Label("添加待办", systemImage: "plus.circle") }
-                        .buttonStyle(.borderless).font(compact ? .system(size: 11) : nil).controlSize(compact ? .small : .regular)
-                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, compact ? 10 : 18)
-                        .padding(.top, compact ? 2 : 18).padding(.bottom, compact ? 8 : 18)
-                }
-                if let error = model.store.error {
-                    HStack { Text(error).font(compact ? .system(size: 9) : .caption); Button("重试保存") { model.store.save() } }.padding(compact ? 6 : 12).background(Color.red.opacity(0.15))
-                } else if !compact {
-                    Text(model.store.dirty ? "尚未保存" : "已保存到本机").font(compact ? .system(size: 9) : .caption2).opacity(0.6).padding(.bottom, compact ? 6 : 10)
-                }
+                if compact {
+                    ScrollViewReader { proxy in
+                        ScrollView { editorContent(n) }
+                            .onChange(of: addedTodo) { _, newID in
+                                guard let newID else { return }
+                                proxy.scrollTo(newID, anchor: .bottom)
+                                focusedTodo = newID
+                            }
+                    }
+                    if !n.deleted && !model.store.isLocked(id) {
+                        Divider()
+                        addTodoButton.padding(.vertical, 6)
+                    }
+                } else { editorContent(n) }
                 }
             }
             .foregroundStyle(ColorValue.ink(n.color)).foregroundColor(ColorValue.ink(n.color)).background(Color(nsColor: ColorValue.ns(n.color)))
@@ -196,4 +179,63 @@ struct NoteEditor: View {
             .onChange(of: model.store.isLocked(id)) { _, locked in if locked { draft = nil } }
         } else { Text("请选择便签").foregroundStyle(.secondary) }
     }
+    private var layerButton: some View {
+        Button(model.store.layer(id) == .floating ? "沉底" : "浮顶", systemImage: model.store.layer(id) == .floating ? "square.3.layers.3d.bottom.filled" : "square.3.layers.3d.top.filled") { model.toggleLayer(id) }
+            .help(model.store.layer(id) == .floating ? "沉底到普通窗口下方" : "浮顶到普通窗口上方")
+    }
+    private func editorContent(_ n: Note) -> some View {
+        VStack(spacing: 0) {
+                TextField("标题", text: Binding(get: { model.store.note(id)?.manualTitle ?? "" }, set: { value in model.store.edit(id) { $0.manualTitle = value } }), prompt: Text(n.title).foregroundColor(ColorValue.ink(n.color).opacity(0.7)))
+                    .font(.system(size: compact ? 15 : 25, weight: .semibold)).textFieldStyle(.plain)
+                    .accessibilityLabel("手动标题，清空恢复自动标题").padding(.horizontal, sidePadding).padding(.top, compact ? 12 : 22)
+                    .disabled(n.deleted || model.store.isLocked(id))
+                Text(n.modified.formatted(date: .abbreviated, time: .shortened) + " · 内容修改")
+                    .font(compact ? .system(size: 9) : .caption).opacity(0.6).frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, sidePadding).padding(.top, compact ? 4 : 8)
+                NoteBody(store: model.store, id: id, compact: compact).id(id).disabled(n.deleted || model.store.isLocked(id))
+                    .frame(minHeight: compact ? 80 : nil, maxHeight: compact ? 80 : nil).modifier(CompactBodyClip(compact: compact))
+                Divider().padding(.horizontal, compact ? 12 : 18)
+                Group {
+                    if compact { todos(n) }
+                    else { ScrollView { todos(n) }.frame(maxHeight: n.todos.isEmpty ? 0 : min(180, CGFloat(n.todos.count) * 43 + 20)) }
+                }
+                if !compact && !n.deleted && !model.store.isLocked(id) {
+                    addTodoButton.padding(.vertical, 18)
+                }
+                if let error = model.store.error {
+                    HStack { Text(error).font(compact ? .system(size: 9) : .caption); Button("重试保存") { model.store.save() }.accessibilityLabel("重试保存") }.padding(compact ? 6 : 12).background(Color.red.opacity(0.15))
+                } else if !compact {
+                    Text(model.store.dirty ? "尚未保存" : "已保存到本机").font(compact ? .system(size: 9) : .caption2).opacity(0.6).padding(.bottom, compact ? 6 : 10)
+                }
+        }
+    }
+
+    private var addTodoButton: some View {
+        Button {
+            guard !model.store.isLocked(id), model.store.note(id)?.deleted == false else { return }
+            if compact && model.prepareTodoAddition?(id) == false { return }
+            let todo = Todo(text: "")
+            model.store.edit(id) { $0.todos.append(todo) }
+            if compact { addedTodo = todo.id }
+        } label: { Label("添加待办", systemImage: "plus.circle") }
+            .buttonStyle(.borderless).font(compact ? .system(size: 11) : nil).controlSize(compact ? .small : .regular)
+            .accessibilityLabel("添加待办")
+            .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, compact ? 10 : 18)
+    }
+
+    private func todos(_ n: Note) -> some View {
+                    VStack(spacing: compact ? 6 : 10) {
+                        ForEach(n.todos) { todo in
+                            HStack(alignment: .top, spacing: compact ? 6 : 9) {
+                                Toggle("完成待办", isOn: Binding(get: { model.store.note(id)?.todos.first { $0.id == todo.id }?.done ?? false }, set: { value in model.store.edit(id) { note in if let i = note.todos.firstIndex(where: { $0.id == todo.id }) { note.todos[i].done = value } } }))
+                                    .labelsHidden().toggleStyle(.checkbox).accessibilityLabel("完成：\(todo.text)").colorScheme(ColorValue.ink(n.color) == .white ? .dark : .light)
+                                TextField("待办文字", text: Binding(get: { model.store.note(id)?.todos.first { $0.id == todo.id }?.text ?? "" }, set: { value in model.store.edit(id) { note in if let i = note.todos.firstIndex(where: { $0.id == todo.id }) { note.todos[i].text = value } } }))
+                                    .textFieldStyle(.plain).strikethrough(todo.done).opacity(todo.done ? 0.6 : 1)
+                                    .focused($focusedTodo, equals: todo.id)
+                                Button { model.store.edit(id) { $0.todos.removeAll { $0.id == todo.id } } } label: { Image(systemName: "minus.circle") }.buttonStyle(.borderless).accessibilityLabel("移除此待办")
+                            }.font(compact ? .system(size: 12) : nil).controlSize(compact ? .small : .regular).disabled(n.deleted || model.store.isLocked(id)).id(todo.id)
+                        }
+                    }.padding(.horizontal, compact ? 10 : 18)
+                        .padding(.top, compact ? 6 : 18).padding(.bottom, compact ? 0 : 18)
+    }
+
 }

@@ -17,6 +17,7 @@ import Combine
 final class NotePanel: NSPanel {
     var movementFinished: (() -> Void)?
     var savedFrame: NSRect?
+    var displayedCollapsed = false
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { false }
 }
@@ -24,6 +25,7 @@ final class NotePanel: NSPanel {
     let model: AppModel
     private(set) var panels: [UUID: NSPanel] = [:]
     private var observation: AnyCancellable?
+    private var opened = Set<UUID>()
     init(model: AppModel) {
         self.model = model
         super.init()
@@ -38,6 +40,22 @@ final class NotePanel: NSPanel {
             panel.endEditing(for: nil)
             return true
         }
+        model.prepareLayerChange = { [weak self] id in
+            guard let self, let panel = self.panels[id] else { return true }
+            if let editor = panel.firstResponder as? NSTextView, editor.hasMarkedText() {
+                self.model.store.error = "请先确认或取消输入法候选，再切换便签层级"
+                return false
+            }
+            panel.endEditing(for: nil); return true
+        }
+        model.prepareTodoAddition = { [weak self] id in
+            guard let self, let panel = self.panels[id] else { return true }
+            if let editor = panel.firstResponder as? NSTextView, editor.hasMarkedText() {
+                self.model.store.error = "请先确认或取消输入法候选，再添加待办"
+                return false
+            }
+            return true
+        }
         observation = model.store.$placements.sink { [weak self] _ in
             // Published emits before assignment; apply the authoritative state on the next turn.
             DispatchQueue.main.async { [weak self] in self?.panels.keys.forEach { self?.synchronizeLock($0) } }
@@ -47,35 +65,58 @@ final class NotePanel: NSPanel {
         guard let panel = panels[id] else { return }
         let locked = model.store.isLocked(id)
         let collapsed = model.store.isCollapsed(id)
-        panel.minSize = NSSize(width: 270, height: collapsed ? NotePlacement.collapsedHeight : 350)
+        panel.minSize = NSSize(width: 270, height: collapsed ? NotePlacement.collapsedHeight : NoteHeight.range.lowerBound)
         panel.isMovable = !locked; panel.isMovableByWindowBackground = false
         if locked || collapsed { panel.styleMask.remove(.resizable) } else { panel.styleMask.insert(.resizable) }
-        if let placement = model.store.placements[id], panel.frame != placement.displayedFrame {
-            panel.setFrame(placement.displayedFrame, display: true)
+        if let notePanel = panel as? NotePanel, notePanel.displayedCollapsed != collapsed,
+           let placement = model.store.placements[id] {
+            panel.setFrame(accessible(placement.displayedFrame), display: true)
+            notePanel.displayedCollapsed = collapsed
         }
+        let level = Self.level(model.store.layer(id))
+        if panel.level != level { panel.level = level; if panel.isVisible { panel.orderFront(nil) } }
         (panel as? NotePanel)?.savedFrame = panel.frame
         panel.standardWindowButton(.closeButton)?.isEnabled = !locked
         panel.standardWindowButton(.miniaturizeButton)?.isEnabled = !locked
         panel.standardWindowButton(.zoomButton)?.isEnabled = !locked
     }
+    static func level(_ layer: NoteLayer) -> NSWindow.Level {
+        layer == .floating ? .floating : NSWindow.Level(rawValue: NSWindow.Level.normal.rawValue - 1)
+    }
+    private func accessible(_ rect: NSRect) -> NSRect {
+        guard let screen = NSScreen.screens.first(where: { $0.visibleFrame.intersects(rect) }) ?? NSScreen.main else { return rect }
+        let visible = screen.visibleFrame
+        let height = min(rect.height, visible.height), width = min(rect.width, visible.width)
+        return NSRect(x: min(max(rect.minX, visible.minX), visible.maxX - width),
+                      y: min(max(rect.maxY, visible.minY + height), visible.maxY) - height,
+                      width: width, height: height)
+    }
     func show(_ id: UUID, point: NSPoint? = nil, orderFront: Bool = true) {
         guard let n = model.store.note(id), !n.deleted else { return }
         let panel: NSPanel
+        let opening = !opened.contains(id)
         if let existing = panels[id] { panel = existing }
         else {
             let style: NSWindow.StyleMask = [.borderless, .resizable, .nonactivatingPanel]
-            let content = NSWindow.contentRect(forFrameRect: NSRect(x: 0, y: 0, width: 270, height: 355), styleMask: style)
+            let content = NSWindow.contentRect(forFrameRect: NSRect(x: 0, y: 0, width: 270, height: model.store.defaultHeight), styleMask: style)
             panel = NotePanel(contentRect: content, styleMask: style, backing: .buffered, defer: false)
             panel.title = "PaperDock · 便签"; panel.titleVisibility = .hidden
-            panel.level = .floating; panel.hidesOnDeactivate = false; panel.isReleasedWhenClosed = false
-            panel.minSize = NSSize(width: 270, height: 350); panel.delegate = self
+            panel.level = Self.level(model.store.layer(id)); panel.hidesOnDeactivate = false; panel.isReleasedWhenClosed = false
+            panel.minSize = NSSize(width: 270, height: NoteHeight.range.lowerBound); panel.delegate = self
             panel.contentView = NSHostingView(rootView: NoteEditor(model: model, id: id, compact: true))
-            if let placement = model.store.placements[id] {
-                panel.minSize = NSSize(width: 270, height: placement.collapsed ? NotePlacement.collapsedHeight : 350)
-                panel.setFrame(placement.displayedFrame, display: false)
-            } else { panel.center() }
+            panel.center()
             (panel as? NotePanel)?.movementFinished = { [weak self] in self?.saveFrame(id) }
             panels[id] = panel
+        }
+        if opening {
+            let collapsed = model.store.isCollapsed(id)
+            var expanded = model.store.placements[id]?.frame ?? panel.frame
+            let top = expanded.maxY
+            expanded.size.height = model.store.defaultHeight; expanded.origin.y = top - expanded.height
+            let shown = collapsed ? NSRect(x: expanded.minX, y: top - NotePlacement.collapsedHeight, width: expanded.width, height: NotePlacement.collapsedHeight) : expanded
+            panel.minSize = NSSize(width: 270, height: collapsed ? NotePlacement.collapsedHeight : NoteHeight.range.lowerBound)
+            panel.setFrame(accessible(shown), display: false)
+            (panel as? NotePanel)?.displayedCollapsed = collapsed
         }
         synchronizeLock(id)
         if !model.store.isLocked(id), let p = point, let frame = NSScreen.main?.visibleFrame {
@@ -85,8 +126,9 @@ final class NotePanel: NSPanel {
             saveFrame(id)
         }
         model.store.arrange(id) { $0.visible = true }
+        opened.insert(id)
         // Ordering is deliberately separate from key focus: clicking the editor grants input.
-        if orderFront { panel.orderFrontRegardless() }
+        if orderFront { panel.orderFront(nil) }
     }
     private func saveFrame(_ id: UUID) {
         guard let panel = panels[id] as? NotePanel, !model.store.isLocked(id) else { return }
@@ -98,7 +140,7 @@ final class NotePanel: NSPanel {
               let id = panels.first(where: { $0.value === window })?.key else { return }
         saveFrame(id)
     }
-    func hide(_ id: UUID) { panels[id]?.orderOut(nil) }
+    func hide(_ id: UUID) { panels[id]?.orderOut(nil); opened.remove(id) }
     func windowShouldClose(_ sender: NSWindow) -> Bool {
         if let id = panels.first(where: { $0.value === sender })?.key {
             guard !model.store.isLocked(id) else { return false }

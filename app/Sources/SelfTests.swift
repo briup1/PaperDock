@@ -8,13 +8,14 @@ struct TestFailure: Error, LocalizedError, CustomStringConvertible {
     if !ok() { throw TestFailure(description: message) }
 }
 @MainActor func coreTests(_ suite: String, directory: URL) throws {
+    if suite.hasPrefix("note-settings-") { try noteSettingsTests(suite, directory: directory); return }
     if suite.hasPrefix("compact-") && suite != "compact-red" { try compactTests(suite, directory: directory); return }
     if suite == "compact-red" {
         _ = NSApplication.shared
         let s = try Store(directory: directory), model = AppModel(store: s), windows = NoteWindows(model: model)
         let id = s.create(); windows.show(id, orderFront: false)
         let panel = windows.panels[id]!
-        try expect(panel.frame.size == NSSize(width: 270, height: 355), "new note frame must be 270x355pt, not contentRect")
+        try expect(panel.frame.width == 270 && abs(panel.frame.height - 190) <= 1, "new note frame follows global height with <=1pt system alignment")
         panel.orderOut(nil); print("PASS compact-red"); return
     }
     if suite.hasPrefix("pin-") && suite != "pin-red" { try pinTests(suite, directory: directory); return }
@@ -85,10 +86,12 @@ struct TestFailure: Error, LocalizedError, CustomStringConvertible {
     } else if suite == "windows" {
         _ = NSApplication.shared
         let m = AppModel(store: s), windows = NoteWindows(model: m)
+        m.hideFloating = { windows.hide($0) }
         let id = s.create(); windows.show(id); windows.show(id)
         try expect(windows.panels.count == 1 && windows.panels[id]?.isVisible == true, "one window per ID")
         try expect(windows.panels[id]?.level == .floating, "ordinary floating level")
-        windows.panels[id]?.performClose(nil)
+        // Borderless panels have no system close button; exercise their real close delegate.
+        _ = windows.windowShouldClose(windows.panels[id]!)
         try expect(s.note(id)?.visible == false && windows.panels[id]?.isVisible == false, "close stash")
         windows.show(id)
         try expect(windows.panels.count == 1 && windows.panels[id]?.isVisible == true, "reuse same window")

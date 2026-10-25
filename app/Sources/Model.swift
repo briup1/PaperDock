@@ -8,15 +8,21 @@ import AppKit
     @Published var filter: NoteFilter = .all
     @Published var query = ""
     @Published var pendingDelete: UUID?
+    @Published var heightDraft: String
+    @Published var heightFeedback: String?
+    @Published var heightSaveFailed = false
     var showFloating: ((UUID) -> Void)?
     var hideFloating: ((UUID) -> Void)?
     var showManager: (() -> Void)?
     var floatingFrame: ((UUID) -> NSRect?)?
     var lockChanged: ((UUID) -> Void)?
     var prepareCollapse: ((UUID) -> Bool)?
+    var prepareLayerChange: ((UUID) -> Bool)?
+    var prepareTodoAddition: ((UUID) -> Bool)?
     private var observation: AnyCancellable?
     init(store: Store) {
         self.store = store
+        heightDraft = String(store.defaultHeight)
         observation = store.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
     }
     var results: [Note] { store.results(filter, query) }
@@ -42,6 +48,26 @@ import AppKit
         guard !store.isLocked(id), store.note(id)?.deleted == false else { return false }
         if !store.isCollapsed(id), prepareCollapse?(id) == false { return false }
         guard store.setCollapsed(id, !store.isCollapsed(id), frame: floatingFrame?(id)) else { return false }
+        lockChanged?(id); return true
+    }
+    @discardableResult func saveHeight() -> Bool {
+        guard let value = Double(heightDraft.trimmingCharacters(in: .whitespacesAndNewlines)), NoteHeight.valid(value) else {
+            heightSaveFailed = true; heightFeedback = "请输入175…1000pt的有限数字（可含小数）"; return false
+        }
+        guard store.setDefaultHeight(value) else {
+            heightSaveFailed = true; heightFeedback = store.error; return false
+        }
+        heightDraft = String(value); heightSaveFailed = false
+        heightFeedback = "已保存；下次打开或展开生效，当前窗口不变"; return true
+    }
+    @discardableResult func toggleLayer(_ id: UUID) -> Bool {
+        setLayer(id, store.layer(id) == .floating ? .desktop : .floating)
+    }
+    @discardableResult func setLayer(_ id: UUID, _ layer: NoteLayer) -> Bool {
+        guard !store.isLocked(id), let n = store.note(id), !n.deleted, n.visible else { return false }
+        if store.layer(id) == layer { return true }
+        if prepareLayerChange?(id) == false { return false }
+        guard store.setLayer(id, layer, frame: floatingFrame?(id)) else { return false }
         lockChanged?(id); return true
     }
     func stash(_ id: UUID) {

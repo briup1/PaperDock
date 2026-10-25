@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="wl-qa-test-planner"><meta name="artifact-schema-version" content="1"><meta name="source-sha256" content="f9ce73c1ebc5ba8eb98ce127297203d45f086319ba923a8c0c118931b51e1ddf"><title>0007 用例：全局高度与按张层级 · approved</title><style>
+:root{--bg:#F7F6F3;--fg:#2F3437;--muted:#787774;--line:#EAE7E0;--accent:#9F2F2D;--soft:#FDEBEC}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 'Plus Jakarta Sans','PingFang SC','Microsoft YaHei',sans-serif}
+a{color:var(--accent);text-underline-offset:3px;overflow-wrap:anywhere}button{font:inherit;color:inherit;cursor:pointer}a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.shell{max-width:1520px;margin:auto;display:grid;grid-template-columns:290px minmax(0,1fr);gap:42px;padding:32px}
+aside{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto;padding-right:12px;min-width:0}
+.eyebrow{font:11px/1.6 'JetBrains Mono',ui-monospace,monospace;color:var(--accent);letter-spacing:.06em}
+h1,h2{font-family:'Instrument Serif','Songti SC','SimSun',serif;letter-spacing:-.02em;font-weight:500}h1{font-size:29px;line-height:1.35}h2{font-size:32px;margin:12px 0 24px}h3{font-size:19px;margin:30px 0 12px}p{margin:13px 0}strong{font-weight:650}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0}.chip{display:inline-block;border:1px solid var(--line);background:white;border-radius:999px;padding:3px 9px;font:11px/1.7 ui-monospace,monospace}.warning{background:#FBF3DB;color:#956400}
+nav{display:grid;gap:5px;margin:24px 0}nav a{display:block;text-decoration:none;color:var(--fg);padding:9px 10px;border-left:2px solid transparent;font-size:13px;border-radius:0 4px 4px 0}nav a:hover{background:white}nav a.active{background:var(--soft);border-left-color:var(--accent);color:var(--accent)}
+main{min-width:0;max-width:1040px}.crumb{font:12px ui-monospace,monospace;color:var(--muted)}.crumb:before{content:'●';color:var(--accent);margin-right:9px}section{animation:appear .5s cubic-bezier(.16,1,.3,1)}section[hidden]{display:none}@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+pre{background:#26221E;color:#EDE8E0;padding:20px;border-radius:6px;overflow:auto;font:14px/1.8 'JetBrains Mono',ui-monospace,monospace;white-space:pre;max-width:100%}code{background:#F0EEE9;color:#2F3437;padding:2px 5px;border-radius:4px}pre>code{display:block;background:transparent;color:inherit;padding:0;border-radius:0;font:inherit}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;margin:18px 0}table{border-collapse:collapse;width:100%;font-size:13px;background:white}th{font:12px/1.7 ui-monospace,monospace;background:#FBFAF7;text-align:left}th,td{border:1px solid var(--line);padding:11px 12px;vertical-align:top;min-width:130px}td{overflow-wrap:anywhere}th:first-child,td:first-child{min-width:145px}ul{padding-left:23px}li{margin:9px 0}li.story{border-left:2px solid var(--accent);background:white;padding:12px 16px;list-style:none;margin-left:-23px}li.story strong{color:var(--accent)}
+dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;margin:14px 0}dt{font-weight:650}dd{margin:0;min-width:0}.pager{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:24px 0;margin-top:30px}.pager button{border:1px solid var(--line);border-radius:6px;padding:12px 16px;background:white}.pager button:disabled{color:#A8A49C;cursor:default}.source{color:var(--muted);font-size:12px;overflow-wrap:anywhere;margin-top:24px}
+@media(max-width:859px){.shell{display:block;padding:20px}aside{position:static;max-height:none;padding:0}nav{grid-template-columns:repeat(2,minmax(0,1fr));margin:16px 0;gap:4px}main{max-width:none}h1{font-size:25px}h2{font-size:27px}dl{grid-template-columns:1fr;gap:4px}dd{margin-bottom:10px}pre{padding:14px}th,td{min-width:150px}}
+@media(prefers-reduced-motion:reduce){section{animation:none}}
+</style></head>
+<body><div class="shell"><aside><div class="eyebrow">wl-qa-test-planner<br>产物规范：1</div><h1>0007 用例：全局高度与按张层级</h1><div class="chips"><span class="chip warning">status: approved</span><span class="chip">execution_phase: verifying</span><span class="chip">version: 0.5</span><span class="chip">created: 2026-10-25</span></div><p class="chip warning">业务用例v0.5 · 修正原型已批准 · 独立复核另记 · 非测试通过</p><nav aria-label="章节"><a href="#sec-1">01 / 范围、入口与公共准备</a><a href="#sec-2">02 / A：折叠与锁定</a><a href="#sec-3">03 / B：统一打开高度</a><a href="#sec-4">04 / C：沉底与浮顶</a><a href="#sec-5">05 / D：原随机规则保持</a><a href="#sec-6">06 / E：批准原型后的两处修正</a><a href="#sec-7">07 / 覆盖与缺口</a></nav><div class="source"><a href="test-cases.wl-qa-test-planner.md">Markdown 唯一正文</a><br>批准证据：2026-10-25用户已明确批准190pt修正原型、两处立即更改与本机体验；下述v0.4历史委托沿用，执行与独立审查结果另记；协调者转达用户“直接修改需求和方案、其余没问题、进入开发、全部交给你协调、效率优先”；本版按最新全局高度语义修订，175…1000pt为委托采用推荐；不代表独立审查或执行通过<br>HTML 由 render-docs.py 生成；视觉验证未执行；当前审查缺口见正文（生成器不执行视觉验收）。</div></aside><main><section id="sec-1" aria-labelledby="title-1"><div class="crumb">SEC 01 / 07</div><h2 id="title-1">范围、入口与公共准备</h2><ul><li>来源：<a href="requirement.wl-req-confirm.html">需求v0.5</a>。入口：本轮隔离候选“设置与默认纸色”的完整高度输入＋保存／生效值／反馈，文件／管理器／空态／边缘新建、独立便签工具栏；候选命令后续在progress.md给出，不把旧应用当新功能。</li><li>只用项目内全新绝对路径合成库；不启动／退出用户实例，不改系统设置或权限，不复制日常库。同库串行、正常退出后再读回。</li><li>公共便签“稍后采购”，正文“下午核对清单”，待办“核对数量”（未完成）、“联系供应商”（完成）。长文100行“采购记录001”…“采购记录100”，12条待办。记录ID、内容时间、纸色、宽、x和上沿；保留所有测试数据和失败证据。</li><li>尺寸测量约定：保存逻辑高度必须精确保留输入值（如177.5）；非超屏场景的实际系统外框与目标允许≤1pt对齐误差，不放宽输入范围；超屏暂限另验。</li><li>执行记录引用<a href="/Users/ziyun/workdir/self_project/AICodingBank/tools/execution-profiles/test-execution.md">统一约定</a>。用例不维护结果；本版独立复核、HTML视觉与真人操作尚待执行，旧审查不继承为本版通过。</li></ul></section><section id="sec-2" aria-labelledby="title-2"><div class="crumb">SEC 02 / 07</div><h2 id="title-2">A：折叠与锁定</h2><h3>TC-001：锁定条只显示有用入口</h3>
+<p>对应需求（Trace）：R01、R05；优先级：P1。</p>
+<p><strong>测试场景</strong>：独立便签折叠、锁定及找回。</p>
+<p><strong>测试数据</strong>：公共便签，初始未锁展开。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 点−折叠，再钉住
+   预期：条高27pt，标题与解锁可达；＋、×及层级操作隐藏，不可拖动或展开。
+2. 从管理器尝试编辑、收纳、删除同一ID
+   预期：整张锁定仍有效，无内容／可见变化。
+3. 解锁，点×，从管理器找回再点＋
+   预期：操作恢复，×仅收纳；找回同ID且仍折叠，展开使用当前全局高度，内容不变。
+4. 对照内容修改时间
+   预期：以上整理动作均不改时间。</code></pre></section><section id="sec-3" aria-labelledby="title-3"><div class="crumb">SEC 03 / 07</div><h2 id="title-3">B：统一打开高度</h2><h3>TC-002：设置、草稿、边界及小布局</h3>
+<p>对应需求（Trace）：R02、R05；优先级：P0。</p>
+<p><strong>测试场景</strong>：管理页面保存全局高度，验证下次打开和175／177.5pt可读写。</p>
+<p><strong>测试数据</strong>：新空库，公共长文／12待办；有效值175、177.5、500、1000；无效值空、abc、NaN、Infinity、-Infinity、174.9、1000.1。另用全新合成库在正式布局保存边界注入失败。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 打开管理页面，未改设置从文件新建A
+   预期：设置页高度显示默认190pt，新窗宽270pt、高190pt，字体未缩小。
+2. 输入500但不保存，新建B；保存后看A/B，再新建C
+   预期：未保存草稿不生效；保存成功后A/B不跳动，C为500pt。
+3. 手动缩放A为600pt，整理B（如钉住再解锁），再从管理器显示已经打开的A；随后真正收纳再找回A；折叠C，保存175，再展开C
+   预期：整理B及再次显示已开A都不让A的600pt／上沿跳动；只有真正收纳找回A才用500pt；C仍27pt直到展开，展开为175pt；保存设置不改变其他已打开窗口。
+4. 分别保存175和177.5，再打开对应长文便签；不先放大，滚动编辑第100行、勾选第12条、添加再移除新增待办
+   预期：正文末尾、待办和操作均可达，字体不变；两种高度均成立。
+5. 两种短高度分别注入正文保存失败，编辑已确认文字后滚动查看错误并触达重试；解除故障重试
+   预期：可见错误、已确认文字保留，重试入口可用，恢复后落盘；不因错误区域而永久裁掉内容或操作。
+6. 逐个输入无效值并保存，每次回到管理页面查看草稿与生效值再新建
+   预期：每个值均被拒绝且显示原因，原生效值不变、草稿仍可修正，新窗不采用无效值。
+7. 记录保存布局字节，输入500并注入布局保存失败后保存；解除故障前比对文件，并新建或收纳找回一张量高；然后解除故障重新保存，另进程读回
+   预期：失败可见、草稿500和旧生效值保留，重试前文件字节不变、新打开仍旧高度；只在重新保存成功后生效并跨进程读回500；已打开窗口仍不跳。
+8. 保存1000并新建，随后保存177.5；正常退出重开
+   预期：1000合法；屏幕不足时显示高度暂限可见区、顶部和内容操作可达，已保存值仍1000而非被偷偷改写；重启后读取最后177.5。
+9. 分别从管理器＋、空态和边缘有效拖出新建
+   预期：均用同一已保存高度；边缘真人操作另记录，程序调用不冒充手势验收。</code></pre>
+<h3>TC-003：旧记录打开、严格兼容与跨进程</h3>
+<p>对应需求（Trace）：R02、R03、R05；优先级：P0。</p>
+<p><strong>测试场景</strong>：旧NoteLayout v1无新字段记录在下次打开统一高度，不批量减半。</p>
+<p><strong>测试数据</strong>：合成旧库A展开355pt、B锁定展开600pt、C折叠存展开400pt、D收纳350pt、E回收站500pt、F无placement；宽270，公共内容；v1缺新全局高度／层级字段。独立坏格式分支：未知version、截断JSON、新高度字段null／字符串／174.9／1000.1、新层级null／数字／未知枚举，旧frame无效；记录布局原始字节与设置快照。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 启动新版读取旧库，尚未移动／整理前比对布局原始字节，检查A/B/C
+   预期：读取不重写文件、不批量缩放、不创建升级备份；A/B按默认190打开，B仍锁；C仍27pt。宽、x、上沿、纸色、内容和内容时间保持（越屏可访问限制另记）。
+2. 展开C，收纳找回D，恢复并显示E，显示F
+   预期：各展开窗口均190，而非按旧高度各自减半；ID不变，缺层级默认浮顶。
+3. 保存高度500，现有窗口不跳动；正常退出，另进程重开，再退出重开
+   预期：每次启动恢复展开窗口500，C若先折回仍27pt；B仍锁、宽/x/上沿保持；没有再次减半或全局值被手动尺寸覆盖。
+4. 将A沉底、B保持浮顶（B已锁不切换），正常退出另进程读取并恢复
+   预期：全局高度500、A沉底／B浮顶按张保留，SQLite模型与内容时间不变。
+5. 分别打开每个坏格式分支并比较原字节
+   预期：报错并保留原文件，不把null／错类型／坏值当缺字段、不清空重建；未知版本仍拒绝。
+6. 静态核对旧应用的350pt下限与新布局低于350的记录
+   预期：明确记为不承诺旧版无损回读，不用更改version／覆盖库来假装降级成功；本用例不执行真实库降级。</code></pre></section><section id="sec-4" aria-labelledby="title-4"><div class="crumb">SEC 04 / 07</div><h2 id="title-4">C：沉底与浮顶</h2><h3>TC-004：真实遮挡与桌面找回</h3>
+<p>对应需求（Trace）：R03、R05；优先级：P0。</p>
+<p><strong>测试场景</strong>：同一桌面中逐张切换便签与普通应用窗口的前后关系。</p>
+<p><strong>测试数据</strong>：公共A/B未锁，普通应用对照窗口不含敏感资料。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 新建A/B，激活普通应用并重叠
+   预期：都在普通窗口之上，只提供“沉底”。
+2. 对A点沉底，再使用普通应用
+   预期：A在下、B在上，A仍可见记录而非收纳／删除。
+3. 在当前桌面逐个最小化对照和其他遮挡窗口，不退出／收纳PaperDock、不切Space；直接点击A正文编辑，再恢复同一对照窗口
+   预期：桌面可找到并编辑A，只提供“浮顶”；恢复普通窗口后A仍在下，不因点击自行浮顶。
+4. 再最小化对照，点A浮顶，恢复对照
+   预期：A到普通窗口之上，操作变“沉底”，两种互斥。
+5. 折叠A切换层级，再钉住；解锁展开，再钉住
+   预期：未锁折叠可切换；展开／折叠锁定都无有效层级入口；解锁恢复正确操作。
+6. 对同一锁定ID调用正式AppModel与Store层级请求；对照未编辑分支内容时间
+   预期：不能绕过锁定，权威状态和真实窗口层级不变；仅层级动作不改内容时间。</code></pre>
+<h3>TC-005：找回、失败与候选保护</h3>
+<p>对应需求（Trace）：R01、R03、R05；优先级：P1。</p>
+<p><strong>测试场景</strong>：混合层级保存、收纳找回及失败重试。</p>
+<p><strong>测试数据</strong>：A沉底、B浮顶；独立合成故障库，普通对照窗口。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 收纳A，从管理器显示A，再正常退出重开，用普通窗口重叠
+   预期：同ID A仍下、B仍上，没有全局最后层级覆盖每张状态。
+2. 分别在内容保存和布局保存正式边界抛错，切换未锁A
+   预期：可见报错，权威层级和实际窗口不变；布局失败前内容允许已保存但不能伪称切换成功；解除故障重新请求才成功。
+3. 用真人中文输入法保留未确认候选，再触发层级操作
+   预期：提示先确认或取消，不切换、不提交候选、不丢已确认文字；处理候选后重新请求成功。程序模拟只覆盖保护分支，不替代真人。
+4. 已锁折叠条模拟保存错误
+   预期：＋、×、层级操作仍隐藏，错误提示仍能查看。</code></pre></section><section id="sec-5" aria-labelledby="title-5"><div class="crumb">SEC 05 / 07</div><h2 id="title-5">D：原随机规则保持</h2><h3>TC-006：六色范围及自定义跨进程</h3>
+<p>对应需求（Trace）：R04；优先级：P1。</p>
+<p><strong>测试场景</strong>：新旧库高度／层级设置不改随机池、固定色和旧纸色。</p>
+<p><strong>测试数据</strong>：默认六色#FFFEFA、#F5EEDC、#E9DDC6、#EDF0ED、#E5EEDC、#303731；两个合成旧库：固定#ABCDEF；随机加入#ABCDEF且暂存#2468AC。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 默认库从文件、管理器＋、空态、边缘入口新建；核对共用颜色选择实现
+   预期：均仅来自六色，各一次独立1/6，允许重复；短样本不宣称证明等概率。
+2. 仅改当前为#ABCDEF后新建，再固定未来#ABCDEF，新建两张并重启新建
+   预期：只改当前不扩池；固定后新建均为固定色，旧色不重染。
+3. 切随机加入#ABCDEF，重复加入，再保存高度500及A沉底；正常退出另进程读回
+   预期：池七色且不加权，层级／高度不清设置，暂存不混入池。
+4. 用新版分别打开两组合成旧库，保存高度、层级并正常重启，再逐项比对固定开关／固定色／加入池／暂存与旧纸色并新建
+   预期：全部原样保留；固定新建#ABCDEF，随机候选七色；用直接规则核验，不靠恰巧抽中自定义色。</code></pre></section><section id="sec-6" aria-labelledby="title-6"><div class="crumb">SEC 06 / 07</div><h2 id="title-6">E：批准原型后的两处修正</h2><h3>TC-007：短便签从0逐条添加，新行和下一次入口始终可达</h3>
+<p>对应需求（Trace）：R06、R05、D06、D07；优先级：P0。</p>
+<p><strong>测试场景</strong>：270pt宽、190pt与175pt分别使用新空合成便签；不先灌入待办、不手动滚到底。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 打开空便签，核对count=0与添加入口
+   预期：工具栏固定、内容可滚、下沿添加完整可见。
+2. 连续按真实添加控件3次，每次等本轮重排后分别测量
+   预期：同ID count依次1、2、3；每次新行完整落入可视区、其输入框为field editor焦点；添加入口完整可见且位置不变；175与190均成立，字号不缩小。
+3. 输入／修改／勾选和移除待办，写100行正文并编辑末尾
+   预期：既有待办与正文功能、字号和保存规则不变；管理器同ID编辑布局保持。
+4. 添加时注入保存失败，随后滚动到错误区；解除故障重试
+   预期：新增项仍在内存，错误和重试可达，添加仍固定；解除故障后正式保存成功。控件点按和正式save调用分开记证据，不能混称通过。
+5. 钉住，再从控件或Store尝试新增；解锁后正文保留未确认候选并添加
+   预期：锁时入口隐藏且最终Store拒绝修改；候选未确认时不新增、不取消候选或抢焦点，提示先确认／取消；真人IME另记。</code></pre>
+<h3>TC-008：完整高度区迁入设置，190只作为缺省值</h3>
+<p>对应需求（Trace）：R02、D05、D07；优先级：P0。</p>
+<p><strong>测试步骤</strong>：</p>
+<pre><code>1. 空合成库打开管理器与“设置与默认纸色”
+   预期：列表顶部无高度区；设置内输入、保存、生效值、成功／失败反馈完整可见；配色等旧设置保持。
+2. 草稿500后保存；在独立分支注入布局失败后保存并解除重试
+   预期：沿TC-002的生效时机、失败旧值／草稿保留，不改变当前打开窗；错误与成功反馈位于设置内。
+3. 分别读取缺defaultHeight的v1文件和已保存177.5的v1文件，比对原始字节
+   预期：缺字段默认190；已保存177.5仍177.5且不重写、不迁移、不覆盖；新空库也默认190。</code></pre></section><section id="sec-7" aria-labelledby="title-7"><div class="crumb">SEC 07 / 07</div><h2 id="title-7">覆盖与缺口</h2><div class="table-wrap"><table><thead><tr><th>规则</th><th>用例</th><th>覆盖</th></tr></thead><tbody><tr><td>R01</td><td>TC-001、TC-005.4</td><td>隐藏／恢复、最终锁定、错误入口</td></tr><tr><td>R02</td><td>TC-002、TC-003</td><td>保存草稿、175/177.5/1000、非法值与失败、打开／展开生命周期、旧锁和严格可选字段、无迁移</td></tr><tr><td>R03</td><td>TC-003.4、TC-004、TC-005</td><td>缺字段默认、按张混合跨进程、真实遮挡、锁绕过、失败及候选保护</td></tr><tr><td>R04</td><td>TC-006</td><td>默认独立抽取、不清固定／自定义设置</td></tr><tr><td>R05</td><td>TC-001至TC-005、TC-007</td><td>内容时间、ID、输入法及保存保护</td></tr><tr><td>R06／D05～D07</td><td>TC-007、TC-008</td><td>190/175逐条新增、固定入口、新行焦点、设置迁入、已有值不覆盖</td></tr></tbody></table></div>
+<ul><li>v0.5新增用户批准的TC-007/008，旧结论不自动继承；v0.4替换v0.3一次性减半用例；批准来源见frontmatter，本版<a href="case-readiness-review.md">独立复审</a>指出的失败后重试前证据、其他便签通知及已显示同ID不跳动、系统外框容差三项精度已原位吸收；修订者自查不冒充再次独立复核。执行结果另记，不继承历史结论。</li><li>真实桌面找回统一用TC-004.3；系统“显示桌面”若另测单列，不替代基础路径。完整真人输入法、边缘手势、跨应用交互及HTML视觉仍待实际执行。</li><li>原生内容缓存图不证明系统遮挡；窗口服务器顺序／最小实验只证明其实际输入场景，不冒充最终产品完整验收。全屏／其他Space／Stage Manager／系统弹窗不在保证范围。</li></ul></section><div class="pager"><button id="prev">← 上一节</button><button id="next">下一节 →</button></div></main></div><script>
+const panels=[...document.querySelectorAll('main section')], links=[...document.querySelectorAll('nav a')];let current=0;
+function show(i,scroll=false){current=Math.max(0,Math.min(i,panels.length-1));panels.forEach((p,n)=>p.hidden=n!==current);links.forEach((a,n)=>{a.classList.toggle('active',n===current);if(n===current)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});document.getElementById('prev').disabled=current===0;document.getElementById('next').disabled=current===panels.length-1;if(scroll)document.querySelector('main').scrollIntoView({block:'start'})}
+function hash(){const id=decodeURIComponent(location.hash.slice(1)),target=id&&document.getElementById(id);if(target){const panel=target.closest('section');if(panel)show(panels.indexOf(panel))}else show(0)}
+links.forEach((a,i)=>a.addEventListener('click',()=>show(i,true)));window.addEventListener('hashchange',hash);document.getElementById('prev').onclick=()=>{show(current-1,true);location.hash=panels[current].id};document.getElementById('next').onclick=()=>{show(current+1,true);location.hash=panels[current].id};document.addEventListener('keydown',e=>{if(e.altKey||e.metaKey||e.ctrlKey||e.target.closest('input,textarea,select,button'))return;if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();show(current+(e.key==='ArrowDown'?1:-1),true);location.hash=panels[current].id}});hash();
+</script></body></html>
